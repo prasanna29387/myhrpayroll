@@ -1,5 +1,6 @@
 package com.master.client.bean;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Data;
  */
 
 @Data
+@Builder
 public class Client {
 
     private String clientName;
@@ -16,5 +18,18 @@ public class Client {
     private String clientContactPhone;
     private String taxIdentifactionNumber;
     private String panNumber;
+
+    public static Client fromJson(String jsonString) {
+        return ClientMethods.fromJson(jsonString);
+    }
+
+    public String toJson() {
+        return new ClientMethods().toJson(this);
+    }
+
+    public String toJsonForUI() {
+        return new ClientMethods().toJsonForUI(this);
+    }
+
 
 }

@@ -3,5 +3,20 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+  <display-name>myHrPayroll</display-name>
+
+    <context-param>
+        <param-name>org.togglz.core.manager.TogglzConfig</param-name>
+        <param-value>com.bnym.tce.toggle.TceTogglesConfig</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>TogglzConsoleServlet</servlet-name>
+        <servlet-class>org.togglz.console.TogglzConsoleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TogglzConsoleServlet</servlet-name>
+        <url-pattern>/togglz-console/*</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>
