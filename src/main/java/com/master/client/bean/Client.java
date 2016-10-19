@@ -1,9 +1,11 @@
 package com.master.client.bean;
 
+import com.google.gson.annotations.Expose;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Athul on 10/16/16.
@@ -12,16 +14,24 @@ import java.util.ArrayList;
 @Data
 @Builder
 public class Client {
-
+    @Expose
     private String clientName;
+    @Expose
     private long clientId;
+    @Expose
     private String clientContactName;
+    @Expose
     private String clientContactEmail;
+    @Expose
     private String clientContactPhone;
+    @Expose
     private String taxIdentifactionNumber;
+    @Expose
     private String panNumber;
-    private ArrayList<String> errors;
-    private ArrayList<String> warnings;
+    @Expose
+    private List<String> errors = new ArrayList<>();
+    @Expose
+    private List<String> warnings = new ArrayList<>();
 
     public static Client fromJson(String jsonString) {
         return ClientMethods.fromJson(jsonString);
