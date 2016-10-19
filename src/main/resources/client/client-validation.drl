@@ -1,0 +1,18 @@
+package com.bnym.tce.drools.rules;
+ 
+
+import java.util.Currency;
+import com.master.client.bean.Client;
+global org.slf4j.Logger log;
+
+
+rule "check-transaction-type-for-null"
+lock-on-active true
+    when
+        $C : Client(clientId==null)
+    then
+        $C.getErrors().add("Client Id cannot be null ");
+        update ($C);
+end
+
+

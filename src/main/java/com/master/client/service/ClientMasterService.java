@@ -2,20 +2,29 @@ package com.master.client.service;
 
 
 import com.master.client.bean.Client;
+import com.util.RuleRunner;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Slf4j
 @Service
 public class ClientMasterService {
 
+    @Autowired
+    private RuleRunner ruleRunner;
 
-    public ArrayList<String> addClient(String clientJson) {
+    public Client addClient(String clientJson) {
         Client client = Client.fromJson(clientJson);
-        return null;
+        validateClientData(client);
+        return client;
 
+    }
+
+    protected Client validateClientData(Client client)
+    {
+        ruleRunner.runRules(client);
+        return client;
     }
 }
 

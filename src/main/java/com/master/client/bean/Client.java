@@ -3,6 +3,8 @@ package com.master.client.bean;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
+
 /**
  * Created by Athul on 10/16/16.
  */
@@ -18,6 +20,8 @@ public class Client {
     private String clientContactPhone;
     private String taxIdentifactionNumber;
     private String panNumber;
+    private ArrayList<String> errors;
+    private ArrayList<String> warnings;
 
     public static Client fromJson(String jsonString) {
         return ClientMethods.fromJson(jsonString);

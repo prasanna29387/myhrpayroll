@@ -55,15 +55,15 @@ public class ClientMasterControllerTest extends BaseControllerTest {
     @Test
     public void testAddMethod() throws Exception{
         Client client = Client.builder().build();
-        when(fakeClientMasterService.addClient(anyString())).thenReturn(new ArrayList<>());
+        when(fakeClientMasterService.addClient(anyString())).thenReturn(client);
 
         Client content = Client.builder().clientName("Stephen").clientId(12345).clientContactName("StephenRaj").clientContactPhone("98410")
                 .clientContactEmail("stephen@gmail.com").panNumber("AMJ1234").taxIdentifactionNumber("1234").build();
 
         mockMvc.perform(post(ClientMasterController.ADD).contentType(MediaType.ALL_VALUE)
                 .content(content.toJson())).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-                //.andExpect(content().string());
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString(client.toJsonForUI())));
 
     }
 }

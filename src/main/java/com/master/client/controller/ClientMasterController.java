@@ -1,5 +1,6 @@
 package com.master.client.controller;
 
+import com.master.client.bean.Client;
 import com.master.client.service.ClientMasterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class ClientMasterController {
     protected static final String ADD = "/addClient" ;
 
     @RequestMapping(value = ADD, method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ArrayList<String>> addNewClient(@RequestBody String clientJson) {
-        return new ResponseEntity<>(clientMasterService.addClient(clientJson), HttpStatus.OK );
+    public ResponseEntity<String> addNewClient(@RequestBody String clientJson) {
+        return new ResponseEntity<>(clientMasterService.addClient(clientJson).toJsonForUI(), HttpStatus.OK );
     }
 }
