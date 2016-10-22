@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -27,6 +28,11 @@ public class ContextConfig {
         dataSource.setUsername("admin");
         dataSource.setPassword("admin001");
         return dataSource;
+    }
+
+    @Bean
+    public JdbcTemplate getJdbcTemplate() {
+        return new JdbcTemplate();
     }
 
 }

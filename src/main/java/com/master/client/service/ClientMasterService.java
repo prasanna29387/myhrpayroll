@@ -25,7 +25,6 @@ public class ClientMasterService {
 
     protected Client recordClientInformationInDB(Client client) {
 
-
         return client;
     }
 

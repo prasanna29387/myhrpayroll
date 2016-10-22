@@ -8,9 +8,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-/**
- * Created by Athul on 10/19/16.
- */
 public class ClientMethodsTest {
 
     private ClientMethods testObj = new ClientMethods();
