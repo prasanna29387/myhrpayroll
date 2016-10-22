@@ -19,8 +19,14 @@ public class ClientMasterService {
     public Client addClient(String clientJson) {
         Client client = Client.fromJson(clientJson);
         validateClientData(client);
-        return client;
+        return client.getErrors()!=null && client.getErrors().size()>0 ? client : recordClientInformationInDB(client);
 
+    }
+
+    protected Client recordClientInformationInDB(Client client) {
+
+
+        return client;
     }
 
     protected Client validateClientData(Client client)

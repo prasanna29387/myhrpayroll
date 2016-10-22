@@ -3,19 +3,86 @@ package client;
 
 import java.util.Currency;
 import com.master.client.bean.Client;
+import com.util.RulesHelper;
+
 global org.slf4j.Logger log;
 
-
-rule "check-transaction-type-for-null"
+rule "check-client-name-null"
 lock-on-active true
     when
         $C : Client(clientName==null)
     then
-        System.out.println($C.toString());
-        $C.getErrors().add("Client Id cannot be null ");
-        System.out.println($C.toString());
+        $C.getErrors().add("Client Name is a required field. ");
+end
 
-        update ($C);
+rule "check-client-id-is-not-zero"
+lock-on-active true
+    when
+        $C : Client(clientId==0)
+    then
+        $C.getErrors().add("Client Id cannot be 0. ");
 end
 
 
+rule "check-client-contact-name"
+lock-on-active true
+    when
+        $C : Client(clientContactName==0)
+    then
+        $C.getErrors().add("Client Contact Name is a mandatory field. ");
+end
+
+
+rule "check-client-contact-invalid-charc"
+lock-on-active true
+    when
+        $C : Client(clientContactName!=null,!clientContactName.empty,!RulesHelper.isAlphaNumericWithSpaces(clientContactName))
+    then
+        $C.getErrors().add("Client Contact Name must not contain anything other special characters. ");
+end
+
+
+rule "check-pan"
+lock-on-active true
+    when
+        $C : Client(panNumber==null || panNumber.empty)
+    then
+        $C.getErrors().add("PAN is a mandatory field. ");
+end
+
+
+
+rule "check-pan-invalid-charc"
+lock-on-active true
+    when
+        $C : Client(panNumber!=null,!panNumber.empty,panNumber.length()!=10,!RulesHelper.isAlphaNumeric(panNumber))
+    then
+        $C.getErrors().add("PAN cannot contain any special characters and must be 10 characters. ");
+end
+
+
+rule "check-tin-invalid-charc"
+lock-on-active true
+    when
+        $C : Client(taxIdentifactionNumber!=null,!taxIdentifactionNumber.empty,taxIdentifactionNumber.length()!=16,!RulesHelper.isAlphaNumeric(taxIdentifactionNumber))
+    then
+        $C.getErrors().add("TAX Identification Number cannot contain any special characters and must be 16 characters. ");
+end
+
+
+rule "check-email-valid"
+lock-on-active true
+    when
+        $C : Client(clientContactEmail!=null,!clientContactEmail.empty,!RulesHelper.isValidEmail(clientContactEmail))
+    then
+        $C.getErrors().add("Client Contact Email is not in valid format. ");
+end
+
+
+rule "check-client-phone"
+lock-on-active true
+    when
+        $C : Client(clientContactPhone!=null,!clientContactPhone.empty,!RulesHelper.isValidPhone(clientContactPhone))
+    then
+        $C.getErrors().add("Client Contact Phone is not in valid format. ");
+end
