@@ -2,6 +2,7 @@ package com.master.client.service;
 
 
 import com.master.client.bean.Client;
+import com.master.client.dao.ClientMasterDao;
 import com.util.RuleRunner;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +17,19 @@ public class ClientMasterService {
     @Setter
     private RuleRunner ruleRunner;
 
+    @Autowired
+    private ClientMasterDao clientMasterDao;
+
+
     public Client addClient(String clientJson) {
         Client client = Client.fromJson(clientJson);
         validateClientData(client);
-        return client.getErrors()!=null && client.getErrors().size()>0 ? client : recordClientInformationInDB(client);
+        return client.getErrors()!=null && client.getErrors().size()>0 ? client : addClientToDB(client);
 
     }
 
-    protected Client recordClientInformationInDB(Client client) {
-
-        return client;
+    protected Client addClientToDB(Client client) {
+        return clientMasterDao.addClient(client);
     }
 
     protected Client validateClientData(Client client)

@@ -13,12 +13,11 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan("com")
 public class ContextConfig {
-
     @Bean
-    @Lazy
-    public RuleRunner getRuleRunner() {
-        return new RuleRunner();
+    public JdbcTemplate getJdbcTemplate() {
+        return new JdbcTemplate(getDataSource());
     }
+
 
     @Bean
     public DataSource getDataSource() {
@@ -29,10 +28,4 @@ public class ContextConfig {
         dataSource.setPassword("admin001");
         return dataSource;
     }
-
-    @Bean
-    public JdbcTemplate getJdbcTemplate() {
-        return new JdbcTemplate();
-    }
-
 }
