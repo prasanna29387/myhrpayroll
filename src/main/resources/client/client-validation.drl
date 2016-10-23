@@ -61,15 +61,6 @@ lock-on-active true
 end
 
 
-rule "check-tin-invalid-charc"
-lock-on-active true
-    when
-        $C : Client(taxIdentifactionNumber!=null,!taxIdentifactionNumber.empty,taxIdentifactionNumber.length()!=16,!RulesHelper.isAlphaNumeric(taxIdentifactionNumber))
-    then
-        $C.getErrors().add("TAX Identification Number cannot contain any special characters and must be 16 characters. ");
-end
-
-
 rule "check-email-valid"
 lock-on-active true
     when

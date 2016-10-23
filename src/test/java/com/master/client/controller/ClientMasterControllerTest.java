@@ -16,10 +16,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,14 +51,44 @@ public class ClientMasterControllerTest extends BaseControllerTest {
     }
 
     @Test
-    public void testAddMethod() throws Exception{
+    public void testAddClient() throws Exception{
         Client client = Client.builder().build();
         when(fakeClientMasterService.addClient(anyString())).thenReturn(client);
 
         Client content = Client.builder().clientName("Stephen").clientId(12345).clientContactName("StephenRaj").clientContactPhone("98410")
-                .clientContactEmail("stephen@gmail.com").panNumber("AMJ1234").taxIdentifactionNumber("1234").build();
+                .clientContactEmail("stephen@gmail.com").panNumber("AMJ1234").build();
 
         mockMvc.perform(post(ClientMasterController.ADD).contentType(MediaType.ALL_VALUE)
+                .content(content.toJson())).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString(client.toJsonForUI())));
+
+    }
+
+    @Test
+    public void testUpdateClient() throws Exception{
+        Client client = Client.builder().build();
+        when(fakeClientMasterService.updateClient(anyString())).thenReturn(client);
+
+        Client content = Client.builder().clientName("Stephen").clientId(12345).clientContactName("StephenRaj").clientContactPhone("98410")
+                .clientContactEmail("stephen@gmail.com").panNumber("AMJ1234").build();
+
+        mockMvc.perform(post(ClientMasterController.UPDATE).contentType(MediaType.ALL_VALUE)
+                .content(content.toJson())).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().string(containsString(client.toJsonForUI())));
+
+    }
+
+    @Test
+    public void testDeleteClient() throws Exception{
+        Client client = Client.builder().build();
+        when(fakeClientMasterService.deleteClient(anyString())).thenReturn(client);
+
+        Client content = Client.builder().clientName("Stephen").clientId(12345).clientContactName("StephenRaj").clientContactPhone("98410")
+                .clientContactEmail("stephen@gmail.com").panNumber("AMJ1234").build();
+
+        mockMvc.perform(post(ClientMasterController.DELETE).contentType(MediaType.ALL_VALUE)
                 .content(content.toJson())).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().string(containsString(client.toJsonForUI())));

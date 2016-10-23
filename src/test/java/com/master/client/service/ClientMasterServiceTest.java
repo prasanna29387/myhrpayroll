@@ -17,9 +17,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.never;
@@ -57,31 +54,50 @@ public class ClientMasterServiceTest {
         Client client = Client.builder().errors(new ArrayList<>()).warnings(new ArrayList<>()).build();
         Client result = fakeClientMasterService.addClient(client.toJson());
         assertTrue(result.getErrors().size() > 0);
+        result = fakeClientMasterService.updateClient(client.toJson());
+        assertTrue(result.getErrors().size() > 0);
+        result = fakeClientMasterService.deleteClient(client.toJson());
+        assertTrue(result.getErrors().size() > 0);
     }
 
     @Test
     public void testClientHappyPath() throws Exception {
         Client goodClient = Client.builder().clientContactEmail("yaamini@gmail.com").clientContactName("Yamu").clientName("Somu and Co").clientId(6)
-                .clientContactPhone("551-267-1754").panNumber("AMJPA2957P").taxIdentifactionNumber("TIN1234561234561").errors(new ArrayList<>()).warnings(new ArrayList<>()).build();
+                .clientContactPhone("551-267-1754").panNumber("AMJPA2957P").errors(new ArrayList<>()).warnings(new ArrayList<>()).build();
 
         fakeClientMasterService.addClient(goodClient.toJson());
         verify(fakeClientMasterDao).addClient(anyObject());
+
+        fakeClientMasterService.updateClient(goodClient.toJson());
+        verify(fakeClientMasterDao).updateClient(anyObject());
+
+        fakeClientMasterService.deleteClient(goodClient.toJson());
+        verify(fakeClientMasterDao).deleteClient(anyObject());
     }
 
 
     @Test
     public void testClientFullOfErrors() throws Exception {
         Client badClient = Client.builder().clientContactEmail("yamini.com").clientContactName("YAM!@#").clientId(0)
-                .clientContactPhone("123-123").panNumber("AMJ123").taxIdentifactionNumber("123123!!!").errors(new ArrayList<>()).warnings(new ArrayList<>()).build();
+                .clientContactPhone("123-123").panNumber("AMJ123").errors(new ArrayList<>()).warnings(new ArrayList<>()).build();
 
         Client result = fakeClientMasterService.addClient(badClient.toJson());
         assertTrue(result.getErrors().toString().contains("Client Contact Email is not in valid format."));
         assertTrue(result.getErrors().toString().contains("Client Name is a required field."));
         assertTrue(result.getErrors().toString().contains("Client Id cannot be 0."));
         assertTrue(result.getErrors().toString().contains("Client Contact Name must not contain anything other special characters."));
-        assertTrue(result.getErrors().toString().contains("TAX Identification Number cannot contain any special characters and must be 16 characters."));
         assertTrue(result.getErrors().toString().contains("Client Contact Email is not in valid format."));
         assertTrue(result.getErrors().toString().contains("Client Contact Phone is not in valid format."));
         verify(fakeClientMasterDao,never()).addClient(anyObject());
+
+
+        result = fakeClientMasterService.updateClient(badClient.toJson());
+        assertTrue(result.getErrors().toString().contains("Client Contact Email is not in valid format."));
+        assertTrue(result.getErrors().toString().contains("Client Name is a required field."));
+        assertTrue(result.getErrors().toString().contains("Client Id cannot be 0."));
+        assertTrue(result.getErrors().toString().contains("Client Contact Name must not contain anything other special characters."));
+        assertTrue(result.getErrors().toString().contains("Client Contact Email is not in valid format."));
+        assertTrue(result.getErrors().toString().contains("Client Contact Phone is not in valid format."));
+        verify(fakeClientMasterDao,never()).updateClient(anyObject());
     }
 }

@@ -28,9 +28,34 @@ public class ClientMasterService {
 
     }
 
+
+    public Client updateClient(String clientJson) {
+        Client client = Client.fromJson(clientJson);
+        validateClientData(client);
+        return client.getErrors()!=null && client.getErrors().size()>0 ? client : updateClientToDB(client);
+    }
+
+
+    public Client deleteClient(String clientJson) {
+        Client client = Client.fromJson(clientJson);
+        validateClientData(client);
+        return client.getErrors()!=null && client.getErrors().size()>0 ? client : deleteClientToDB(client);
+
+    }
+
     protected Client addClientToDB(Client client) {
         return clientMasterDao.addClient(client);
     }
+
+
+    protected Client updateClientToDB(Client client) {
+        return clientMasterDao.updateClient(client);
+    }
+
+    protected Client deleteClientToDB(Client client) {
+        return clientMasterDao.deleteClient(client);
+    }
+
 
     protected Client validateClientData(Client client)
     {

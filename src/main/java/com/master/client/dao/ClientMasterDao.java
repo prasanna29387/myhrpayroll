@@ -16,8 +16,56 @@ public class ClientMasterDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+
     public Client addClient(Client client)
     {
+        if(addStatement(client)==-1)
+        {
+            client.getErrors().add("Error while creating a new client");
+        }
         return client;
+    }
+
+
+    public Client updateClient(Client client)
+    {
+        if(updateStatement(client)==-1)
+        {
+            client.getErrors().add("Error while updating client");
+        }
+
+        return client;
+    }
+
+    public Client deleteClient(Client client)
+    {
+        if(deleteStatement(client)==-1)
+        {
+            client.getErrors().add("Error while Deleting client");
+        }
+
+        return client;
+    }
+
+
+    protected int addStatement(Client client)
+    {
+        String sql = "insert into T_PAYRL_CLIENT_MSTR values(?,?,?,?,?,?)";
+        return jdbcTemplate.update(sql,new Object[]{client.getClientId(),client.getClientName(),client.getClientContactEmail(),
+                client.getClientContactName(),client.getClientContactPhone(),client.getPanNumber()});
+    }
+
+    protected int updateStatement(Client client)
+    {
+        String sql = "UPDATE T_PAYRL_CLIENT_MSTR SET CLIENT_NAME = ? ,CLIENT_CONTACT_NAME = ? ,CLIENT_EMAIL = ? " +
+                ",CLIENT_PHONE=? ,CLIENT_PAN= ? WHERE CLIENT_ID=?";
+        return jdbcTemplate.update(sql,new Object[]{client.getClientName(),client.getClientContactName(),
+                client.getClientContactEmail(),client.getClientContactPhone(),client.getPanNumber(),client.getClientId()});
+    }
+
+    protected int deleteStatement(Client client)
+    {
+        String sql = "DELETE FROM T_PAYRL_CLIENT_MSTR WHERE CLIENT_ID=?";
+        return jdbcTemplate.update(sql,new Object[]{client.getClientId()});
     }
 }

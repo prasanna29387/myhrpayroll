@@ -1,6 +1,5 @@
 package com.config;
 
-import com.util.RuleRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +19,7 @@ public class ContextConfig {
 
 
     @Bean
+    @Lazy
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");

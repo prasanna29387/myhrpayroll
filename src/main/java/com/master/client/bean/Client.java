@@ -25,8 +25,6 @@ public class Client {
     @Expose
     private String clientContactPhone;
     @Expose
-    private String taxIdentifactionNumber;
-    @Expose
     private String panNumber;
     @Expose
     private List<String> errors = new ArrayList<>();
