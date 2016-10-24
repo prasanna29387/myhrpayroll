@@ -50,14 +50,14 @@ public class ClientMasterDao {
 
     protected int addStatement(Client client)
     {
-        String sql = "insert into T_PAYRL_CLIENT_MSTR values(?,?,?,?,?,?)";
+        String sql = "insert into t_payrl_client_mstr values(?,?,?,?,?,?)";
         return jdbcTemplate.update(sql,new Object[]{client.getClientId(),client.getClientName(),client.getClientContactEmail(),
                 client.getClientContactName(),client.getClientContactPhone(),client.getPanNumber()});
     }
 
     protected int updateStatement(Client client)
     {
-        String sql = "UPDATE T_PAYRL_CLIENT_MSTR SET CLIENT_NAME = ? ,CLIENT_CONTACT_NAME = ? ,CLIENT_EMAIL = ? " +
+        String sql = "UPDATE t_payrl_client_mstr SET CLIENT_NAME = ? ,CLIENT_CONTACT_NAME = ? ,CLIENT_EMAIL = ? " +
                 ",CLIENT_PHONE=? ,CLIENT_PAN= ? WHERE CLIENT_ID=?";
         return jdbcTemplate.update(sql,new Object[]{client.getClientName(),client.getClientContactName(),
                 client.getClientContactEmail(),client.getClientContactPhone(),client.getPanNumber(),client.getClientId()});
@@ -65,7 +65,7 @@ public class ClientMasterDao {
 
     protected int deleteStatement(Client client)
     {
-        String sql = "DELETE FROM T_PAYRL_CLIENT_MSTR WHERE CLIENT_ID=?";
+        String sql = "DELETE FROM t_payrl_client_mstr WHERE CLIENT_ID=?";
         return jdbcTemplate.update(sql,new Object[]{client.getClientId()});
     }
 }
