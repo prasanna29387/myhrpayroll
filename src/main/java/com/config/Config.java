@@ -1,0 +1,98 @@
+package com.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.drools.core.util.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.File;
+import java.util.*;
+
+@Slf4j
+public class Config {
+	public static final String TCE_PUBLISH_FLAG_FILE_KEY = "tce.publish.active.flag.file";
+	public static final String TCE_RUNTIME_ENV_KEY = "tce.env";
+	protected static final String TCE_RUNTIME_ENV_PRODUCTION = "Production";
+	protected static final Properties properties = new Properties();
+	private static volatile File monitor;
+	private static volatile ClassPathXmlApplicationContext springContext = null;
+	private static String currentModuleName = null;
+
+	private Config() {
+	}
+
+	public static String getProperty(String key) {
+		return properties.getProperty(key);
+	}
+
+	public static String getProperty(String key, String defaultValue) {
+		return properties.getProperty(key, defaultValue);
+	}
+
+	public static Set<String> getPropertyNames() {
+		return properties.stringPropertyNames();
+	}
+
+
+	public static String getRuntimeEnvironment() {
+		return System.getProperty(TCE_RUNTIME_ENV_KEY);
+	}
+
+
+	public static synchronized String getCurrentModuleName() {
+		return Config.currentModuleName;
+	}
+
+
+	public static boolean isPublishingEnabled() {
+		if (monitor == null) {
+			monitor = new File(properties.getProperty(TCE_PUBLISH_FLAG_FILE_KEY, ""));
+		}
+		return monitor.exists();
+	}
+
+	public static boolean isProductionMode() {
+		return TCE_RUNTIME_ENV_PRODUCTION.equalsIgnoreCase(getRuntimeEnvironment());
+	}
+
+	public static ApplicationContext getSpringContext() {
+		return springContext;
+	}
+
+	public static void setProperty(String key, String value) {
+		if (value == null) {
+			properties.remove(key);
+		} else {
+			properties.setProperty(key, value);
+		}
+	}
+
+	public static void loadPropertiesFromFile(String moduleName, String environment) {
+		properties.clear();
+		String propertiesFileName = moduleName + "-" + environment + ".properties";
+		try {
+			Configuration configuration = new Configurations().properties(propertiesFileName);
+			for (Iterator<String> itor = configuration.getKeys(); itor.hasNext();) {
+				String key = itor.next();
+				String value = configuration.getString(key);
+				String systemValue = System.getProperty(key);
+				if (!StringUtils.isEmpty(systemValue) && (!systemValue.equals(value))) {
+					log.warn("Overriding app property {}={} with system value:{}", key, value, systemValue);
+					value = systemValue;
+				}
+				properties.put(key, value);
+			}
+		} catch (ConfigurationException e) {
+			throw new IllegalStateException(
+					"Unable to load properties for module " + moduleName + ": " + e.getMessage(), e);
+		}
+	}
+
+	private static void resetMonitor() {
+		monitor = null;
+	}
+
+}

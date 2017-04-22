@@ -56,6 +56,7 @@ public class RulesHelper {
 	{
 		return email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 	}
+
 	public static boolean isValidSwiftFormat(String input) {
 		return input.matches("[a-zA-Z0-9\\s\\.\\,\\-\\(\\)\\/\\'\\+\\:\\?\\r\\n]+");
 	}
@@ -91,5 +92,20 @@ public class RulesHelper {
 	private static boolean notNullAndHasSize(String input, int size) {
 		return input != null && input.length() >= size;
 	}
+
+
+
+
+	public static int addNumbers(int... args)
+	{
+		int out = 0;
+		for(int value : args)
+		{
+			out = out + value;
+		}
+		return out;
+	}
+
+
 
 }
