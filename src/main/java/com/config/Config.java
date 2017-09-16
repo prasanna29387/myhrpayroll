@@ -4,22 +4,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.drools.core.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 
 @Slf4j
 public class Config {
 	public static final String TCE_PUBLISH_FLAG_FILE_KEY = "tce.publish.active.flag.file";
-	public static final String TCE_RUNTIME_ENV_KEY = "tce.env";
-	protected static final String TCE_RUNTIME_ENV_PRODUCTION = "Production";
+	public static final String RUNTIME_ENV_KEY = "app.env";
+	protected static final String RUNTIME_ENV_PRODUCTION = "Production";
 	protected static final Properties properties = new Properties();
+	public static final String APPLICATION = "application";
 	private static volatile File monitor;
 	private static volatile ClassPathXmlApplicationContext springContext = null;
-	private static String currentModuleName = null;
+
+	public static synchronized void kickOffConfig() {
+		try {
+			loadPropertiesFromFile(getRuntimeEnv());
+		} catch (Exception e) {
+			log.error("Problems initializing Configuration", e);
+		}
+	}
+
+	private static String getRuntimeEnv() {
+		String currentEnv = System.getProperty(RUNTIME_ENV_KEY);
+		return StringUtils.isNotEmpty(currentEnv) ? currentEnv : "Local";
+	}
 
 	private Config() {
 	}
@@ -36,16 +51,9 @@ public class Config {
 		return properties.stringPropertyNames();
 	}
 
-
 	public static String getRuntimeEnvironment() {
-		return System.getProperty(TCE_RUNTIME_ENV_KEY);
+		return getRuntimeEnv();
 	}
-
-
-	public static synchronized String getCurrentModuleName() {
-		return Config.currentModuleName;
-	}
-
 
 	public static boolean isPublishingEnabled() {
 		if (monitor == null) {
@@ -55,7 +63,7 @@ public class Config {
 	}
 
 	public static boolean isProductionMode() {
-		return TCE_RUNTIME_ENV_PRODUCTION.equalsIgnoreCase(getRuntimeEnvironment());
+		return RUNTIME_ENV_PRODUCTION.equalsIgnoreCase(getRuntimeEnvironment());
 	}
 
 	public static ApplicationContext getSpringContext() {
@@ -70,9 +78,9 @@ public class Config {
 		}
 	}
 
-	public static void loadPropertiesFromFile(String moduleName, String environment) {
+	public static void loadPropertiesFromFile(String environment) {
 		properties.clear();
-		String propertiesFileName = moduleName + "-" + environment + ".properties";
+		String propertiesFileName = APPLICATION + "-" + environment + ".properties";
 		try {
 			Configuration configuration = new Configurations().properties(propertiesFileName);
 			for (Iterator<String> itor = configuration.getKeys(); itor.hasNext();) {
@@ -87,12 +95,7 @@ public class Config {
 			}
 		} catch (ConfigurationException e) {
 			throw new IllegalStateException(
-					"Unable to load properties for module " + moduleName + ": " + e.getMessage(), e);
+					"Unable to load properties for environment " + environment + ": " + e.getMessage(), e);
 		}
 	}
-
-	private static void resetMonitor() {
-		monitor = null;
-	}
-
 }

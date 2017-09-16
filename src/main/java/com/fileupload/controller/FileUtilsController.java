@@ -6,18 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
@@ -40,24 +35,6 @@ public class FileUtilsController {
 	public static final String SUCCESS_RESPONSE_MSG = "File copied successfully.";
 	public static final String EXEC_SYSTEM_COMMAND = "/execSystemCommand";
 	protected static String backupFolder = Config.getProperty("fax.nas.backup.folder");
-
-
-
-	@RequestMapping(value = "/uploadFile", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public void uploadFile(MultipartHttpServletRequest request, HttpServletResponse response) {
-		Iterator<String> itr = request.getFileNames();
-		try {
-			while(itr.hasNext()) {
-				MultipartFile bulkUploadFile = request.getFile(itr.next());
-				String fileName = bulkUploadFile.getOriginalFilename();
-				create(bulkUploadFile, fileName, backupFolder);
-			}
-			response.setStatus(HttpResponseStatus.OK.getCode());
-		} catch (Exception e) {
-			log.info("You failed to upload :{}", e);
-			response.setStatus(HttpResponseStatus.BAD_REQUEST.getCode());
-		}
-	}
 
 	@RequestMapping(value = COPY_FILE_TO_DIRECTORY, method = RequestMethod.GET)
 	public ResponseEntity<String> copyFileToDirectory(@RequestParam("sourceFilePath") final String sourceFilePath,

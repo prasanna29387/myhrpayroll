@@ -52,7 +52,6 @@ public class FileParserService {
 			builder.data(recordData);
 			builder.rowsCount(recordData.size());
 		}
-		euroClearTemplate(builder, template, uploadFileName);
 		return builder.build();
 	}
 
@@ -62,24 +61,6 @@ public class FileParserService {
 		}
 	}
 
-	private void euroClearTemplate(FileParserPayLoadBuilder builder, TemplateInfo template, String uploadFileName) {
-		if (template.getTemplateName() == null || (!template.getTemplateName().toLowerCase().contains("euroclear"))) {
-			return;
-		}
-
-		if (uploadFileName.toUpperCase().contains("RVF")) {
-			builder.message("All transactions will be booked as RVF");
-			builder.templateName(template.getTemplateName() + "RVF");
-		} else if (uploadFileName.toUpperCase().contains("DVF")) {
-			builder.message("All transactions will be booked as DVF");
-			builder.templateName(template.getTemplateName() + "DVF");
-		} else {
-			builder.message(
-					"Euroclear template requires filename to contain either DVF or RVF. Please rename the file and upload again");
-			builder.enableSubmit(false);
-		}
-
-	}
 
 	private List<String> getHeaderFromUploadFile(String uploadFileName) throws IOException {
 		return FileUploadUtil.getColumnHeader(backUpFolder, uploadFileName).stream().map(e -> e.toLowerCase().trim())

@@ -16,6 +16,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,9 +30,8 @@ public class FileUploadUtil {
 	public static final String CSV = ".csv";
 	public static final String XLS = ".xls";
 	public static final String XLSX = ".xlsx";
-	public static final String TCEFIELDS_WORKSHEET = "TCE Fields";
-	public static final String TCE_PREFIX = "TCE_";
-	public static final String TCE_REQUIRED_KEY = "Y";
+	public static final String MPHR = "MPHR Fields";
+	public static final String REQUIRED_KEY = "Y";
 	private static final String SPECIAL_CHARS = "[-/@#$%^&_+=()]+";
 	@Getter
 	private static long templateLoadTimeStamp = 0;
@@ -87,7 +88,7 @@ public class FileUploadUtil {
 	private static List<String> getUnmatchedRequiredTceFields(String closestTemplateMatch,
 	                                                          List<String> unmatchedFields) {
 		return FileUploadUtil.getTemplateConfig().get(closestTemplateMatch).entrySet().stream()
-				.filter(entry -> unmatchedFields.contains(entry.getKey().toLowerCase()) && TCE_REQUIRED_KEY
+				.filter(entry -> unmatchedFields.contains(entry.getKey().toLowerCase()) && REQUIRED_KEY
 						.equalsIgnoreCase(FileUploadUtil.getTceFields().get(entry.getValue().toLowerCase())))
 				.map(Map.Entry::getValue).collect(Collectors.toList());
 	}
@@ -129,7 +130,7 @@ public class FileUploadUtil {
 				if (isCellNotEmpty(cell))
 					cellCount++;
 			}
-			if (cellCount >= 10) {
+			if (cellCount > 0) {
 				return populatedListFromRow(row, lastRow);
 			}
 		}
@@ -151,7 +152,7 @@ public class FileUploadUtil {
 			Workbook workbook = createExcelFile(configLocation, configFileName);
 			for (int index = 0; index < workbook.getNumberOfSheets(); index++) {
 				Sheet sheetAt = workbook.getSheetAt(index);
-				if (!TCEFIELDS_WORKSHEET.equalsIgnoreCase(sheetAt.getSheetName())) {
+				if (!MPHR.equalsIgnoreCase(sheetAt.getSheetName())) {
 					Map<String, String> columnMap = populateTemplateCache(sheetAt);
 					templateConfig.put(sheetAt.getSheetName(), columnMap);
 					log.debug("Loaded Bulk Mapping {}: {}", sheetAt.getSheetName(), columnMap);
@@ -231,12 +232,12 @@ public class FileUploadUtil {
 
 	private static List<String> populateData(Row row) {
 		return IntStream.range(row.getFirstCellNum(), row.getLastCellNum())
-				.filter(i -> isNotTceCol(row, i)).mapToObj(i -> getCellValueAsString(row.getCell(i)))
+				.mapToObj(i -> getCellValueAsString(row.getCell(i)))
 				.collect(Collectors.toCollection(LinkedList::new));
 	}
 
 	private static List<String> populatedListFromRow(Row h2, Row h1) {
-		return IntStream.range(h2.getFirstCellNum(), h2.getLastCellNum()).filter(i -> isNotTceCol(h2, i))
+		return IntStream.range(h2.getFirstCellNum(), h2.getLastCellNum())
 				.mapToObj(i -> getHeaderCellValue(h1, h2, i)).collect(Collectors.toList());
 	}
 
@@ -253,10 +254,6 @@ public class FileUploadUtil {
 		return partialHeaderList.contains(result) ? result : EMPTY;
 	}
 
-	private static boolean isNotTceCol(Row header, int colIndex) {
-		return !getCellValueAsString(header.getCell(colIndex)).toUpperCase().startsWith(TCE_PREFIX);
-	}
-
 	private static String getCellValueAsString(Cell cell) {
 		if (cell != null && cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
 			return cell.getCachedFormulaResultType() == Cell.CELL_TYPE_NUMERIC
@@ -266,8 +263,7 @@ public class FileUploadUtil {
 	}
 
 	private static List<String> getColumnHeaderFromCSV(String[] headerArray) {
-		return IntStream.range(0, headerArray.length).filter(i -> !headerArray[i].toUpperCase().startsWith(TCE_PREFIX))
-				.mapToObj(j -> headerArray[j]).collect(Collectors.toList());
+		return IntStream.range(0, headerArray.length).mapToObj(j -> headerArray[j]).collect(Collectors.toList());
 	}
 
 	private static CSVReader createCSVReader(File csvFile) throws IOException {
@@ -296,7 +292,10 @@ public class FileUploadUtil {
 	}
 
 	private static List<Integer> getTceColIndexes(String[] headerArray) {
-		return IntStream.range(0, headerArray.length).filter(i -> headerArray[i].toUpperCase().startsWith(TCE_PREFIX))
-				.boxed().collect(Collectors.toList());
+		return IntStream.range(0, headerArray.length).boxed().collect(Collectors.toList());
+	}
+
+	public static String getCurrentDateTimeAsString(String pattern) {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
 	}
 }
