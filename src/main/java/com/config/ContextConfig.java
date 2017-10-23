@@ -10,8 +10,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan("com")
+@ComponentScan("com.fileupload")
 public class ContextConfig {
+
     @Bean
     public JdbcTemplate getJdbcTemplate() {
         return new JdbcTemplate(getDataSource());
@@ -22,10 +23,10 @@ public class ContextConfig {
     @Lazy
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        /*dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/dev");
         dataSource.setUsername("admin");
-        dataSource.setPassword("admin001");
+        dataSource.setPassword("admin001");*/
         return dataSource;
     }
 }

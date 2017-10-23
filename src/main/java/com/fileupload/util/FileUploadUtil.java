@@ -99,7 +99,7 @@ public class FileUploadUtil {
 			return populateDataFromCSV(new File(sourceFolder, filename));
 		} else {
 			createExcelFile(sourceFolder, filename).getSheetAt(0).rowIterator().forEachRemaining(e -> {
-				if (!isEmptyRow(e) && (e.getLastCellNum() >= 10)) {
+				if (!isEmptyRow(e) && (e.getLastCellNum() >= 0)) {
 					recordList.add(populateData(e));
 				}
 			});
@@ -109,7 +109,7 @@ public class FileUploadUtil {
 
 	private static boolean isEmptyRow(Row row) {
 		return IntStream.range(row.getFirstCellNum(), row.getLastCellNum())
-				.filter(cellNum -> isCellNotEmpty(row.getCell(cellNum))).count() < 10;
+				.filter(cellNum -> isCellNotEmpty(row.getCell(cellNum))).count() ==0;
 	}
 
 	private static boolean isCellNotEmpty(Cell cell) {

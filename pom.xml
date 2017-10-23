@@ -252,7 +252,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-
+        <!-- Apache PdfBox -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -518,6 +522,14 @@
                 <artifactId>netty</artifactId>
                 <version>3.2.0.Final</version>
             </dependency>
+
+            <!-- Apache PdfBox -->
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

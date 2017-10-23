@@ -2,6 +2,7 @@ package com.fileupload.controller;
 
 import com.config.Config;
 import com.fileupload.service.FileParserService;
+import com.fileupload.service.FileProcessorService;
 import com.fileupload.util.FileUploadUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,13 @@ public class FileParserController {
 	protected static final String YYYY_MM_DD_HHMMSS = "yyyy-MM-dd_HHmmss";
 	public static final String DELIMITER = ".";
 	public static final String UNDERSCORE = "_";
-
-    @Autowired
-	private FileParserService fileParserService;
 	protected static String backupFolder = Config.getProperty(UPLOAD_FILE_LOCATION);
+
+
+	@Autowired
+	private FileProcessorService fileProcessorService;
+	@Autowired
+	private FileParserService fileParserService;
 
 
 	@RequestMapping(value = UPLOAD_FILE, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -56,6 +60,34 @@ public class FileParserController {
 		}
 		return new ResponseEntity<>("SOMETHING WENT WRONG WITH THE REQUEST:" , HttpStatus.SERVICE_UNAVAILABLE);
 	}
+
+
+	@RequestMapping(value = SUBMIT_UPLOAD, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> submitBulkUpload(@RequestParam("uploadFileName") final String uploadFileName, @RequestParam("clientName") final String clientName) {
+		try {
+			bulkUploadSubmit(uploadFileName, clientName);
+			return new ResponseEntity<>("Success:" , HttpStatus.OK);
+		} catch (IOException e) {
+			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
+			return new ResponseEntity<>("ERROR:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public void bulkUploadSubmit(String uploadFileName,String clientName) throws IOException {
+		ResponseEntity<String> response = new ResponseEntity<>(fileParserService.getPayload(uploadFileName, true).toJson(), HttpStatus.OK);
+		fileProcessorService.processFile(response,clientName,uploadFileName);
+	}
+
+	public ResponseEntity<String> findMatchingTemplate(@RequestParam("uploadFileName") final String uploadFileName,
+			@RequestParam("withData") final boolean withData) {
+		try {
+			return new ResponseEntity<>(fileParserService.getPayload(uploadFileName, withData).toJson(), HttpStatus.OK);
+		} catch (IOException e) {
+			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
+			return new ResponseEntity<>("ERROR:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
 	public ResponseEntity<String> processUploadedFile(String source, String fileName, byte[] bulkUploadFile)
 			throws IOException {
@@ -85,25 +117,4 @@ public class FileParserController {
 	}
 
 
-	public ResponseEntity<String> findMatchingTemplate(@RequestParam("uploadFileName") final String uploadFileName,
-												@RequestParam("withData") final boolean withData) {
-		try {
-			return new ResponseEntity<>(fileParserService.getPayload(uploadFileName, withData).toJson(), HttpStatus.OK);
-		} catch (IOException e) {
-			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
-			return new ResponseEntity<>("ERROR:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@RequestMapping(value = SUBMIT_UPLOAD, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> submitBulkUpload(@RequestParam("uploadFileName") final String uploadFileName,
-			@RequestParam("withData") final boolean withData) {
-		try {
-
-			return new ResponseEntity<>(fileParserService.getPayload(uploadFileName, withData).toJson(), HttpStatus.OK);
-		} catch (IOException e) {
-			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
-			return new ResponseEntity<>("ERROR:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
 }
