@@ -68,6 +68,8 @@
           <element id="library" level="project" name="Maven: commons-beanutils:commons-beanutils:1.9.3" />
           <element id="library" level="project" name="Maven: commons-collections:commons-collections:3.2.2" />
           <element id="library" level="project" name="Maven: org.jboss.netty:netty:3.2.0.Final" />
+          <element id="library" level="project" name="Maven: org.apache.pdfbox:pdfbox:2.0.1" />
+          <element id="library" level="project" name="Maven: org.apache.pdfbox:fontbox:2.0.1" />
         </element>
       </element>
       <element id="directory" name="META-INF">
