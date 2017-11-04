@@ -25,7 +25,10 @@ public class FileProcessorService {
 	PayRollCsvFileGenerator payRollCsvFileGenerator;
 
 	@Autowired
-	PayRollPdfGenerator payRollPdfGenerator;
+	PayRollPdfGeneratorPdfBox payRollPdfGeneratorPdfBox;
+
+	@Autowired
+	PayRollPdfGeneratorIText payRollPdfGeneratorIText;
 
 	public void processFile(ResponseEntity<String> response, String clientName,String originalFileName) {
 		List<List<Record>> listOfRecords;
@@ -40,7 +43,7 @@ public class FileProcessorService {
 			}
 
 			payRollCsvFileGenerator.createCsvFile(employeePayRolls,originalFileName);
-			payRollPdfGenerator.createPayRollPDf(employeePayRolls,originalFileName);
+			payRollPdfGeneratorIText.createPayRollPDf(employeePayRolls,originalFileName);
 
 		} catch (Exception e) {
 			e.printStackTrace();

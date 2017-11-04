@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class PayRollPdfGenerator {
+public class PayRollPdfGeneratorPdfBox {
 
 	public static final String MY_HR_PAYROLL_SOLUTIONS = "                                                    MY HR PAYROLL SOLUTIONS";
 	@Getter(AccessLevel.PROTECTED)
@@ -66,7 +66,7 @@ public class PayRollPdfGenerator {
 	protected static final String FAX_NAS_BACKUP_FOLDER_KEY = "fax.nas.backup.folder";
 	protected static final String PDF_EXTENSION = ".pdf";
 
-	public PayRollPdfGenerator() {
+	public PayRollPdfGeneratorPdfBox() {
 		formats = new HashMap<>();
 		formats.put(HEADING1, new Format(Color.RED, PDType1Font.HELVETICA_BOLD, 12f));
 		formats.put(HEADING2,
