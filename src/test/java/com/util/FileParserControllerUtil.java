@@ -19,6 +19,7 @@ import java.io.IOException;
 public class FileParserControllerUtil {
 
 	private static final int BUFFER_SIZE = 65535;
+	private static final String TEST_FILE_FOLDER="upload.config.file.test.location";
 	private AbstractApplicationContext ctx;
 	private FileParserController fileParserController;
 
@@ -26,19 +27,19 @@ public class FileParserControllerUtil {
 		Config.kickOffConfig();
 		FileParserControllerUtil fileParserControllerUtil = new FileParserControllerUtil();
 		fileParserControllerUtil.initSetUp();
-		fileParserControllerUtil.runUploadTest();
+		fileParserControllerUtil.runUploadTest("Test3.xls");
 		//fileParserControllerUtil.runSubmitTest();
 
 	}
 
-	public void runUploadTest() {
-		File file = new File("C:\\mhrp\\test", "Test3.xls");
+	public void runUploadTest(String testFileName) {
+		File file = new File(Config.getProperty(TEST_FILE_FOLDER), testFileName);
 		byte[] buffer = new byte[BUFFER_SIZE];
 		try {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			if (fileInputStream.read(buffer, 0, buffer.length) > 0) {
 				//fileParserController.processUploadedFile("BulkUpload", "Test1.xls", buffer);
-				String responseEntity =   fileParserController.processUploadedFile("BulkUpload", "Test1.xls", buffer).toString();
+				String responseEntity =   fileParserController.processUploadedFile("BulkUpload", testFileName, buffer).toString();
 				System.out.println("response "+responseEntity);
 				responseEntity = responseEntity.substring(responseEntity.indexOf(",")+1);
 				responseEntity = responseEntity.substring(0,responseEntity.lastIndexOf(","));
