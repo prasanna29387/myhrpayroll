@@ -78,10 +78,7 @@ public class TogglesConfig implements TogglzConfig {
 	}
 
 	private void modifyTogglzConfigFileOnlyForTceApi(InputStream stream, File destination) throws IOException {
-		if (Config.getCurrentModuleName().equalsIgnoreCase(TCE_API)) {
-			log.debug("Updating {} config file", destination.getName());
 			copyNewContentToTheExistingTogglzFile(stream, destination);
-		}
 	}
 
 	protected void copyNewContentToTheExistingTogglzFile(InputStream stream, File destination) throws IOException {
