@@ -23,7 +23,7 @@ public class FileParserService {
 
 	public static final String UPLOAD_FILE_LOCATION = "fax.nas.backup.folder";
 	public static final String UPLOAD_CONFIG_FILE_NAME = "upload.config.file.name";
-	public static final String UPLOAD_CONFIG_FILE_LOCATION = "upload.config.file.location";
+	public static final String UPLOAD_CONFIG_FILE_LOCATION = "upload.config.file.folder";
 
 	@Setter
 	protected File backUpFolder;

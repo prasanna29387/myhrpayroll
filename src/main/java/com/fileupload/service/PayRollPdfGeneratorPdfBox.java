@@ -100,7 +100,7 @@ public class PayRollPdfGeneratorPdfBox {
 			stringBuilder.append("Employee Id :"+employeePayRoll.getEmployeeId()+" \n");
 			stringBuilder.append("Basic Salary :"+employeePayRoll.getBasicPay()+" \n");
 			stringBuilder.append("Dearness Allowance :"+employeePayRoll.getDearnessAllow()+" \n");
-			stringBuilder.append("Over Time Allowance :"+employeePayRoll.getOverTime()+" \n");
+			stringBuilder.append("Over Time Allowance :"+employeePayRoll.getAllowance()+" \n");
 			stringBuilder.append("Employee PF :"+employeePayRoll.getEmployeePf()+" \n");
 			stringBuilder.append("NET INCOME :"+employeePayRoll.getNetPay()+" \n");
 

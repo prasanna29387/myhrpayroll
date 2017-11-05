@@ -19,13 +19,27 @@ public class EmployeePayRoll implements Serializable {
 	private String clientName;
 	private String employeeName;
 	private String employeeId;
+	private String payRollMonth;
 	private String transactionId;
 	private String uploadedFileName;
-
+	private String designation;
+	private String uan;
+	private String insuranceNumber;
 	private Money basicPay;
 	private Money dearnessAllow;
-	private Money overTime;
+	private Money allowance;
+	private int numberOfWorkingDays;
+	private int actualWorkingDays;
+	private Money earnedBasic;
+	private Money earnedDearnessAllowance;
+	private Money earnedAllowance;
+	private Money earnedBasicPlusDa;
+	private Money earnedGross;
 	private Money employeePf;
+	private Money employeeEsi;
+	private Money employerEpf;
+	private Money employerEps;
+	private Money totalDeductions;
 	private Money netPay;
 
 

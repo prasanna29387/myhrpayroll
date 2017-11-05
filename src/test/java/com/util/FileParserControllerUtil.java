@@ -4,6 +4,7 @@ import com.config.Config;
 import com.config.ContextConfig;
 import com.fileupload.controller.FileParserController;
 import com.fileupload.model.FileParserPayLoad;
+import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -11,6 +12,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by xeccwrj on 9/15/2017.
@@ -19,17 +21,35 @@ import java.io.IOException;
 public class FileParserControllerUtil {
 
 	private static final int BUFFER_SIZE = 65535;
-	private static final String TEST_FILE_FOLDER="upload.config.file.test.location";
+	private static final String TEST_FILE_FOLDER= "upload.config.test.folder";
 	private AbstractApplicationContext ctx;
 	private FileParserController fileParserController;
 
 	public static void main(String[] args) {
 		Config.kickOffConfig();
+		long s1 = System.currentTimeMillis();
+		System.out.println("Start TimeStamp "+s1);
 		FileParserControllerUtil fileParserControllerUtil = new FileParserControllerUtil();
 		fileParserControllerUtil.initSetUp();
-		fileParserControllerUtil.runUploadTest("Test3.xls");
-		//fileParserControllerUtil.runSubmitTest();
+		fileParserControllerUtil.copyFileToTestDirectory("MayExample.xlsx");
+		fileParserControllerUtil.runUploadTest("MayExample.xlsx");
+		long s2 = System.currentTimeMillis();
+		long s3 = s2-s1;
+		System.out.println("Total Time Taken in Seconds"+(int) ((s3 / 1000) % 60));
 
+
+	}
+
+	private void copyFileToTestDirectory(String fileName) {
+
+		try {
+			InputStream inputStream = Config.class.getClassLoader().getResourceAsStream("test/"+fileName);
+
+			File file = new File(Config.getProperty("upload.config.test.folder")+"/"+fileName);
+			FileUtils.copyInputStreamToFile(inputStream,file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void runUploadTest(String testFileName) {
