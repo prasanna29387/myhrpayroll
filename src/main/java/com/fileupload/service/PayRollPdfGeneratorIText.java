@@ -1,13 +1,16 @@
 package com.fileupload.service;
 
 import com.config.Config;
+import com.itext7.CustomDashedLineSeparator;
 import com.itext7.NumbersToWords;
+import com.itextpdf.forms.PdfPageFormCopier;
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Document;
@@ -15,12 +18,13 @@ import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.element.Table;
-import com.itext7.CustomDashedLineSeparator;
 import com.model.EmployeePayRoll;
 import com.money.MoneyFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -68,32 +72,67 @@ public class PayRollPdfGeneratorIText {
 		employeePayRolls.add(employeePayRoll);
 
 		PayRollPdfGeneratorIText payRollPdfGeneratorIText = new PayRollPdfGeneratorIText();
-		payRollPdfGeneratorIText.createPayRollPDf(employeePayRolls);
+		payRollPdfGeneratorIText.createPayRollPDf(employeePayRolls,"MyCompany");
 
 	}
 
 
-	public void createPayRollPDf(List<EmployeePayRoll> employeePayRollList)
+	public void createPayRollPDf(List<EmployeePayRoll> employeePayRollList,String originalFileName)
 	{
-		createPayCheck(employeePayRollList);
+		createPayCheck(employeePayRollList,originalFileName);
 	}
 
-	private void createPayCheck(List<EmployeePayRoll> employeePayRollList) {
+	private void createPayCheck(List<EmployeePayRoll> employeePayRollList,String originalFileName) {
 
-		for(EmployeePayRoll employeePayRoll : employeePayRollList)
-		{
-			if(employeePayRoll.getActualWorkingDays()>0)
-			{
-				String finalFileName = employeePayRoll.getEmployeeName().concat(PAY_SLIP).concat(PDF_EXTENSION);
-				createPdfFile(employeePayRoll,finalFileName);
-			}
+		try {
+			List<PdfDocument> pdfDocumentList = new ArrayList<>();
+			for(EmployeePayRoll employeePayRoll : employeePayRollList)
+            {
+                if(employeePayRoll.getActualWorkingDays()>0)
+                {
+                    String finalFileName = employeePayRoll.getEmployeeName().concat(PAY_SLIP).concat(PDF_EXTENSION);
+                    pdfDocumentList.add(createPdfFile(employeePayRoll,finalFileName));
+                }
+            }
+
+			mergeToMasterPdf(originalFileName);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
 	}
 
-	private void createPdfFile(EmployeePayRoll employeePayRoll,  String finalFileName) {
+	private void mergeToMasterPdf(String originalFileName) throws FileNotFoundException {
+		PdfDocument pdfDocument = null;
+		try {
 
-		PdfDocument pdfDocument;
+			pdfDocument = new PdfDocument(new PdfWriter(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY).concat("/").concat(originalFileName).concat("_pay_slip_matser.pdf")));
+			File backUpDirectory = new File(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY));
+			if(backUpDirectory.isDirectory() && backUpDirectory.exists())
+			{
+				File[] files = new File(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY)).listFiles();
+				for(File file : files)
+				{
+					if(file.getName().endsWith(".pdf") && !file.getName().contains("_pay_slip_matser.pdf"))
+					{
+						PdfDocument currentDoc = new PdfDocument(new PdfReader(file.getAbsolutePath()));
+						currentDoc.copyPagesTo(1,1,pdfDocument,new PdfPageFormCopier());
+						currentDoc.close();
+						file.delete();
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			pdfDocument.close();
+		}
+	}
+
+	private PdfDocument createPdfFile(EmployeePayRoll employeePayRoll,  String finalFileName) {
+
+		PdfDocument pdfDocument = null;
 		Document payCheckDoc = null;
 		try {
 
@@ -136,7 +175,9 @@ public class PayRollPdfGeneratorIText {
 			e.printStackTrace();
 		} finally {
 			payCheckDoc.close();
+			pdfDocument.close();
 		}
+		return pdfDocument;
 	}
 
 	private void addSignature(Document payCheckDoc) {
@@ -149,13 +190,6 @@ public class PayRollPdfGeneratorIText {
 			clientName.setItalic();
 			clientName.add(new Tab()).add(new Tab()).add(new Tab()).add(new Tab()).add("Date : "+ LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))).add(new Tab()).add("Signature : ");
 			payCheckDoc.add(clientName);
-//			clientName = new Paragraph();
-//			font = PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD);
-//			clientName.setFont(font);
-//			clientName.setFontSize(9);
-//			clientName.setItalic();
-//			clientName.add(new Tab()).add(new Tab()).add(new Tab()).add(new Tab()).add(new Tab()).add(new Tab()).);
-//			payCheckDoc.add(clientName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -176,6 +210,7 @@ public class PayRollPdfGeneratorIText {
 			PdfFont font = PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD);
 			employerNamePara.setFont(font);
 			employerNamePara.setFontSize(9);
+			employerNamePara.setItalic();
 			employerNamePara.add("Employer Copy");
 			payCheckDoc.add(employerNamePara);
 		} catch (IOException e) {
@@ -190,6 +225,7 @@ public class PayRollPdfGeneratorIText {
 			PdfFont font = PdfFontFactory.createFont(FontConstants.HELVETICA_BOLD);
 			employerNamePara.setFont(font);
 			employerNamePara.setFontSize(9);
+			employerNamePara.setItalic();
 			employerNamePara.add("Employee Copy");
 			payCheckDoc.add(employerNamePara);
 		} catch (IOException e) {

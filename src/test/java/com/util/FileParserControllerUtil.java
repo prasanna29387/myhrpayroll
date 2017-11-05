@@ -29,10 +29,11 @@ public class FileParserControllerUtil {
 		Config.kickOffConfig();
 		long s1 = System.currentTimeMillis();
 		System.out.println("Start TimeStamp "+s1);
+		String testFileName = "MayExample_UFS.xlsx";
 		FileParserControllerUtil fileParserControllerUtil = new FileParserControllerUtil();
 		fileParserControllerUtil.initSetUp();
-		fileParserControllerUtil.copyFileToTestDirectory("MayExample.xlsx");
-		fileParserControllerUtil.runUploadTest("MayExample.xlsx");
+		fileParserControllerUtil.copyFileToTestDirectory(testFileName);
+		fileParserControllerUtil.runUploadTest(testFileName);
 		long s2 = System.currentTimeMillis();
 		long s3 = s2-s1;
 		System.out.println("Total Time Taken in Seconds"+(int) ((s3 / 1000) % 60));

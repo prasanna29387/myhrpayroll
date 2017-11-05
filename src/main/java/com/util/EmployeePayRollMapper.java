@@ -34,6 +34,7 @@ public class EmployeePayRollMapper {
         fields.put("totalDays", MetaDataKeys.NUMBER_OF_DAYS);
         fields.put("actualDays", MetaDataKeys.ACTUAL_DAYS);
         fields.put("payrollMonth", MetaDataKeys.PAYROLL_MONTH);
+        fields.put("wage", MetaDataKeys.WAGES);
 
     }
 
@@ -89,6 +90,9 @@ public class EmployeePayRollMapper {
 
     public static Money getAllowance(List<Record> records) {
         return getAmountFromField("allowance", records);
+    }
+    public static Money getWages(List<Record> records) {
+        return getAmountFromField("wage", records);
     }
 
     public static int getTotalNumberOfDays(List<Record> records) {

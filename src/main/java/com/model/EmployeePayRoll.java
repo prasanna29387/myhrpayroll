@@ -41,6 +41,7 @@ public class EmployeePayRoll implements Serializable {
 	private Money employerEps;
 	private Money totalDeductions;
 	private Money netPay;
+	private Money wage;
 
 
 }

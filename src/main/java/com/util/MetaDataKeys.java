@@ -19,6 +19,7 @@ public class MetaDataKeys {
 	public static final String NUMBER_OF_DAYS = "Number Of Days";
 	public static final String ACTUAL_DAYS = "Actual Days";
 	public static final String PAYROLL_MONTH = "Payroll Month";
+	public static final String WAGES = "Wage";
 
 
 

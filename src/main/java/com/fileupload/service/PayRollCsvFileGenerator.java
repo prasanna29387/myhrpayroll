@@ -4,10 +4,12 @@ import com.config.Config;
 import com.model.EmployeePayRoll;
 import com.util.FileHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,19 +29,54 @@ public class PayRollCsvFileGenerator {
 	private static final String COMMA_DELIMITER = ",";
 	private static final String EPF_DELIMITER = "#~#";
 	private static final String NEW_LINE = "\n";
-	public static final String RESULT_FILE_NAME = "_result";
-	public static final String EPF_FILE_NAME = "_epf";
+	public static final String RESULT_FILE_NAME = "_Master";
+	public static final String EPF_FILE_NAME = "_ECR";
 	public static final String CSV = ".csv";
 	public static final String TXT = ".txt";
+	public static final String XLSX = ".xlsx";
 
 	public void createCsvFile(List<EmployeePayRoll> employeePayRollList,String originalFileName) {
 		List<List<String>> finalResultForMaster = new ArrayList<>();
 		createHeaderRow(finalResultForMaster);
 		populateEmployeeDataForMaster(employeePayRollList, finalResultForMaster);
 		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ RESULT_FILE_NAME + CSV, finalResultForMaster,COMMA_DELIMITER);
+		convertCsvToXlsx(originalFileName);
 		finalResultForMaster = new ArrayList<>();
 		populateEmployeeDataForEPF(employeePayRollList, finalResultForMaster);
 		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ EPF_FILE_NAME + TXT, finalResultForMaster,EPF_DELIMITER);
+	}
+
+	public void convertCsvToXlsx(String originalFileName)
+	{
+		try {
+			String csvFileAddress = Config.getProperty(UPLOAD_FILE_LOCATION)+ "/" + FileHelper.getBaseNameFromFileName(originalFileName)+ RESULT_FILE_NAME + CSV; //csv file address
+			String xlsxFileAddress =  Config.getProperty(UPLOAD_FILE_LOCATION)+ "/" +FileHelper.getBaseNameFromFileName(originalFileName)+ RESULT_FILE_NAME + XLSX; //xlsx file address
+			XSSFWorkbook workBook = new XSSFWorkbook();
+			XSSFSheet sheet = workBook.createSheet("sheet1");
+			String currentLine=null;
+			int RowNum=0;
+			BufferedReader br = new BufferedReader(new FileReader(csvFileAddress));
+			while ((currentLine = br.readLine()) != null) {
+				String str[] = currentLine.split(",");
+				RowNum++;
+				XSSFRow currentRow=sheet.createRow(RowNum);
+				for(int i=0;i<str.length;i++){
+					currentRow.createCell(i).setCellValue(str[i]);
+				}
+			}
+
+			FileOutputStream fileOutputStream =  new FileOutputStream(xlsxFileAddress);
+			workBook.write(fileOutputStream);
+			fileOutputStream.close();
+			File file = new File(Config.getProperty(UPLOAD_FILE_LOCATION)+ "/" + FileHelper.getBaseNameFromFileName(originalFileName)+ RESULT_FILE_NAME + CSV);
+			if(file.exists())
+			{
+				log.info("Deleting csv file ");
+				file.delete();
+			}
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage()+"Exception in try");
+		}
 	}
 
 	public void createHeaderRow(List<List<String>> finalResult) {
