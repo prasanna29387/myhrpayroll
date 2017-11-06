@@ -20,16 +20,17 @@ import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.element.Table;
 import com.model.EmployeePayRoll;
 import com.money.MoneyFactory;
+import com.util.FileHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by xeccwrj on 9/18/2017.
@@ -96,17 +97,73 @@ public class PayRollPdfGeneratorIText {
             }
 
 			mergeToMasterPdf(originalFileName);
+			//zipItUp(originalFileName);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	private void zipItUp(String originalFileName) {
+
+		String zipFileName = Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY).concat("/").concat(FileHelper.getBaseNameFromFileName(originalFileName)).concat(".zip");
+		byte[] buffer = new byte[1024];
+
+		try{
+
+			FileOutputStream fos = new FileOutputStream(zipFileName);
+			ZipOutputStream zos = new ZipOutputStream(fos);
+
+			log.info("Output to Zip : " + zipFileName);
+
+			File[] sourceFiles = new File(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY)).listFiles();
+
+			for(File file : sourceFiles) {
+				if(!file.getName().endsWith(".zip"))
+				{
+					writeToZip(file.getAbsolutePath(),zos);
+				}
+			}
+
+			zos.close();
+			fos.close();
+		}catch(IOException ex){
+			ex.printStackTrace();
+		}
+	}
+
+	private void writeToZip(String path, ZipOutputStream zipStream)
+	{
+		FileInputStream fis = null;
+		File aFile = null;
+		try {
+			System.out.println("Writing file : '" + path + "' to zip file");
+			aFile = new File(path);
+			fis = new FileInputStream(aFile);
+			ZipEntry zipEntry = new ZipEntry(path);
+			zipStream.putNextEntry(zipEntry);
+			byte[] bytes = new byte[1024];
+			int length;
+			while ((length = fis.read(bytes)) >= 0) {
+                zipStream.write(bytes, 0, length);
+            }
+			zipStream.closeEntry();
+			fis.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			aFile.delete();
+		}
+
+	}
+
 	private void mergeToMasterPdf(String originalFileName) throws FileNotFoundException {
 		PdfDocument pdfDocument = null;
 		try {
 
-			pdfDocument = new PdfDocument(new PdfWriter(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY).concat("/").concat(originalFileName).concat("_pay_slip_matser.pdf")));
+			pdfDocument = new PdfDocument(new PdfWriter(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY).concat("/").concat(FileHelper.getBaseNameFromFileName(originalFileName))
+					.concat("_pay_slip_matser.pdf")));
 			File backUpDirectory = new File(Config.getProperty(FAX_NAS_BACKUP_FOLDER_KEY));
 			if(backUpDirectory.isDirectory() && backUpDirectory.exists())
 			{
