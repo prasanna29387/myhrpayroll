@@ -63,17 +63,18 @@ public class FileProcessorService {
 
 			employeePayRoll.setDearnessAllow(MoneyFactory.fromString("0"));
 			employeePayRoll.setEarnedDearnessAllowance(MoneyFactory.fromString("0"));
-			employeePayRoll.setEarnedAllowance(employeePayRoll.getAllowance().multiply(employeePayRoll.getActualWorkingDays()).truncate(0));
+			employeePayRoll.setBasicPay(employeePayRoll.getWage().multiply(employeePayRoll.getNumberOfWorkingDays()).truncate(0));
 			employeePayRoll.setEarnedBasic(employeePayRoll.getWage().multiply(employeePayRoll.getActualWorkingDays()).truncate(0));
+			employeePayRoll.setEarnedAllowance(employeePayRoll.getAllowance().multiply(employeePayRoll.getActualWorkingDays()).truncate(0));
 			employeePayRoll.setEarnedBasicPlusDa(employeePayRoll.getEarnedBasic());
 			employeePayRoll.setEarnedGross(employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedAllowance()));
 			employeePayRoll.setEmployeePf(employeePayRoll.getEarnedBasic().multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedBasic().multiply(0.0175).truncate(0));
+			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
 
 			employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
 			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
 
-			employeePayRoll.setEmployerEps(employeePayRoll.getEarnedGross().multiply(0.0833).truncate(0));
+			employeePayRoll.setEmployerEps(employeePayRoll.getEarnedBasic().multiply(0.0833).truncate(0));
 			employeePayRoll.setEmployerEpf(employeePayRoll.getEarnedBasic().multiply(0.0367).truncate(0));
 
 
@@ -113,40 +114,6 @@ public class FileProcessorService {
 		return employeePayRoll;
 	}
 
-//	private EmployeePayRoll computeMonthlyPayCheck(EmployeePayRoll employeePayRoll) {
-//
-//
-//		employeePayRoll.setEarnedBasic(((employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(),2))
-//				.multiply(employeePayRoll.getActualWorkingDays())).truncate(2));
-//
-//		employeePayRoll.setEarnedDearnessAllowance(((employeePayRoll.getDearnessAllow().divide(employeePayRoll.getNumberOfWorkingDays(),2)).
-//						multiply(employeePayRoll.getActualWorkingDays())).truncate(2));
-//
-//		Money earnedBasicPlusDa = employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedDearnessAllowance()).truncate(2);
-//
-//		employeePayRoll.setEarnedAllowance(((employeePayRoll.getAllowance().divide(employeePayRoll.getNumberOfWorkingDays(),2)).
-//				multiply(employeePayRoll.getActualWorkingDays())).truncate(2));
-//
-//		employeePayRoll.setEarnedBasicPlusDa(earnedBasicPlusDa);
-//
-//		employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).truncate(2));
-//
-//		employeePayRoll.setEmployeePf(earnedBasicPlusDa.multiply(0.12).truncate(2));
-//		employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(2));
-//
-//
-//		employeePayRoll.setEmployerEps(earnedBasicPlusDa.multiply(0.0833).truncate(2));
-//		employeePayRoll.setEmployerEpf(earnedBasicPlusDa.multiply(0.0367).truncate(2));
-//
-//
-//
-//		employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(2));
-//
-//
-//		employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(2));
-//
-//		return employeePayRoll;
-//	}
 
 	private List<List<Record>> createRecordsFromPayload(FileParserPayLoad payLoad) {
 		List<List<Record>> listOfRecords = new ArrayList<>();
