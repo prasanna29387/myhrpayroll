@@ -355,7 +355,7 @@ public class PayRollPdfGeneratorIText {
 		table.addCell(employeePayRoll.getDesignation());
 		table.addCell("UAN");
 		table.addCell(employeePayRoll.getUan());
-		table.addCell("Insurance Number");
+		table.addCell("ESI Number");
 		table.addCell(employeePayRoll.getInsuranceNumber());
 		payCheckDoc.add(table);
 	}
@@ -380,12 +380,16 @@ public class PayRollPdfGeneratorIText {
 	}
 
 	private void getEarningsTable(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
-		Table table = new Table(2);
+		Table table = new Table(4);
 		table.setFontSize(8);
 		table.addCell("Total No Of Working Days");
 		table.addCell(String.valueOf(employeePayRoll.getNumberOfWorkingDays()));
 		table.addCell("Actual Working Days");
 		table.addCell(String.valueOf(employeePayRoll.getActualWorkingDays()));
+        table.addCell("Daily Wages");
+        table.addCell(employeePayRoll.getWage().toString());
+        table.addCell("");
+        table.addCell("");
 		payCheckDoc.add(table);
 		table = new Table(4);
 		table.setFontSize(8);
