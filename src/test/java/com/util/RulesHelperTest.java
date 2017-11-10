@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
- * Created by xeccwrj on 10/22/2016.
+ * Created by Athul Ravindran  on 10/22/2016.
  */
 public class RulesHelperTest {
 

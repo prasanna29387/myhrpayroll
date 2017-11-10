@@ -7,7 +7,7 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Created by XECCWRJ on 10/16/2016.
+ * Created by Athul Ravindran  on 10/16/2016.
  */
 public class BaseControllerTest {
 

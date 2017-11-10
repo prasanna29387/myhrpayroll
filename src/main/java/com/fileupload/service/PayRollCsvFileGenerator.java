@@ -43,20 +43,32 @@ public class PayRollCsvFileGenerator {
 
 	public void createCsvFile(List<EmployeePayRoll> employeePayRollList,String originalFileName) {
 		List<List<String>> finalResultForMaster = new ArrayList<>();
-		createHeaderRowMaster(finalResultForMaster);
-		populateEmployeeDataForMaster(employeePayRollList, finalResultForMaster);
-		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ RESULT_FILE_NAME + CSV, finalResultForMaster,COMMA_DELIMITER);
-		convertCsvToXlsx(originalFileName,RESULT_FILE_NAME);
+		createMasterReportFile(employeePayRollList, originalFileName, finalResultForMaster);
+		createEsicFile(employeePayRollList, originalFileName);
+		createEcrFile(employeePayRollList, originalFileName);
+	}
 
+	private void createEcrFile(List<EmployeePayRoll> employeePayRollList, String originalFileName) {
+		List<List<String>> finalResultForMaster;
+		finalResultForMaster = new ArrayList<>();
+		populateEmployeeDataForEPF(employeePayRollList, finalResultForMaster);
+		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ EPF_FILE_NAME + TXT, finalResultForMaster,EPF_DELIMITER);
+	}
+
+	private void createEsicFile(List<EmployeePayRoll> employeePayRollList, String originalFileName) {
+		List<List<String>> finalResultForMaster;
 		finalResultForMaster = new ArrayList<>();
 		createHeaderRowEsic(finalResultForMaster);
 		populateEmployeeDataForESIC(employeePayRollList, finalResultForMaster);
 		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ ESIC_FILE_NAME + CSV, finalResultForMaster,COMMA_DELIMITER);
 		convertCsvToXlsx(originalFileName,ESIC_FILE_NAME);
+	}
 
-		finalResultForMaster = new ArrayList<>();
-		populateEmployeeDataForEPF(employeePayRollList, finalResultForMaster);
-		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ EPF_FILE_NAME + TXT, finalResultForMaster,EPF_DELIMITER);
+	private void createMasterReportFile(List<EmployeePayRoll> employeePayRollList, String originalFileName, List<List<String>> finalResultForMaster) {
+		createHeaderRowMaster(finalResultForMaster);
+		populateEmployeeDataForMaster(employeePayRollList, finalResultForMaster);
+		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ RESULT_FILE_NAME + CSV, finalResultForMaster,COMMA_DELIMITER);
+		convertCsvToXlsx(originalFileName,RESULT_FILE_NAME);
 	}
 
 	public void convertCsvToXlsx(String originalFileName,String newFileName)
@@ -88,7 +100,7 @@ public class PayRollCsvFileGenerator {
 				file.delete();
 			}
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage()+"Exception in try");
+			log.error(ex.getMessage()+"Exception in try");
 		}
 	}
 
@@ -108,8 +120,6 @@ public class PayRollCsvFileGenerator {
 
 	private void populateEmployeeDataForMaster(List<EmployeePayRoll> employeePayRollList, List<List<String>> finalResult) {
 		for (EmployeePayRoll employeePayRoll : employeePayRollList) {
-//			if(employeePayRoll.getActualWorkingDays()>0)
-//			{
 				List<String> rowData = new ArrayList<>(Collections.nCopies(21, EMPTY));
 				rowData.set(0, employeePayRoll.getClientName());
 				rowData.set(1, employeePayRoll.getEmployeeName());
@@ -133,7 +143,6 @@ public class PayRollCsvFileGenerator {
 				rowData.set(19, employeePayRoll.getEmployerEps().toString());
 				rowData.set(20, employeePayRoll.getEmployerEpf().toString());
 				finalResult.add(rowData);
-			//}
 		}
 	}
 
