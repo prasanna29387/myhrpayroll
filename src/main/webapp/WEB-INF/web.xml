@@ -4,22 +4,6 @@
 
 <web-app>
   <display-name>myHrPayroll</display-name>
-    <context-param>
-        <param-name>org.togglz.core.manager.TogglzConfig</param-name>
-        <param-value>com.toggle.TogglesConfig</param-value>
-    </context-param>
-
-    <servlet>
-        <servlet-name>TogglzConsoleServlet</servlet-name>
-        <servlet-class>org.togglz.console.TogglzConsoleServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>TogglzConsoleServlet</servlet-name>
-        <url-pattern>/togglz-console/*</url-pattern>
-    </servlet-mapping>
-
-
     <welcome-file-list>
         <welcome-file>upload.jsp</welcome-file>
     </welcome-file-list>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.togglz:togglz-core:unknown">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/togglz/togglz-core/unknown/togglz-core-unknown.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/togglz/togglz-core/unknown/togglz-core-unknown-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/togglz/togglz-core/unknown/togglz-core-unknown-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

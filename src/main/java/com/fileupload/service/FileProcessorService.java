@@ -27,9 +27,6 @@ public class FileProcessorService {
 	PayRollCsvFileGenerator payRollCsvFileGenerator;
 
 	@Autowired
-	PayRollPdfGeneratorPdfBox payRollPdfGeneratorPdfBox;
-
-	@Autowired
 	PayRollPdfGeneratorIText payRollPdfGeneratorIText;
 
 	public void processFile(ResponseEntity<String> response, String clientName,String originalFileName) {

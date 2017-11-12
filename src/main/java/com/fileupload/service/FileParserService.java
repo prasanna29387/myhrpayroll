@@ -7,7 +7,7 @@ import com.fileupload.model.FileParserPayLoad.FileParserPayLoadBuilder;
 import com.fileupload.model.TemplateInfo;
 import com.fileupload.util.FileUploadUtil;
 import lombok.Setter;
-import org.drools.core.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
