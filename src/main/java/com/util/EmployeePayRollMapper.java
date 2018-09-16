@@ -35,6 +35,12 @@ public class EmployeePayRollMapper {
         fields.put("actualDays", MetaDataKeys.ACTUAL_DAYS);
         fields.put("payrollMonth", MetaDataKeys.PAYROLL_MONTH);
         fields.put("wage", MetaDataKeys.WAGES);
+        fields.put("hra", MetaDataKeys.HRA);
+        fields.put("conveyance", MetaDataKeys.CONVEYANCE);
+        fields.put("otHours", MetaDataKeys.OT_HRS);
+        fields.put("aadhar", MetaDataKeys.AADHAR);
+        fields.put("jobId", MetaDataKeys.JDID);
+        fields.put("pmrpy", MetaDataKeys.PMRPY);
 
     }
 
@@ -62,8 +68,19 @@ public class EmployeePayRollMapper {
         return checkAndReturnNA(getValue("insurance", records));
     }
 
+    public static String getAadhar(List<Record> records) {
+        return checkAndReturnNA(getValue("aadhar", records));
+    }
+    public static String getJobId(List<Record> records) {
+        return checkAndReturnNA(getValue("jobId", records));
+    }
+
     public static String getDesignation(List<Record> records) {
         return checkAndReturnNA(getValue("designation", records));
+    }
+
+    public static String getPMRPY(List<Record> records) {
+        return checkAndReturnNA(getValue("pmrpy", records));
     }
 
     public static String getEmployeeId(List<Record> records) {
@@ -93,6 +110,18 @@ public class EmployeePayRollMapper {
     }
     public static Money getWages(List<Record> records) {
         return getAmountFromField("wage", records);
+    }
+
+    public static Money getHra(List<Record> records) {
+        return getAmountFromField("hra", records);
+    }
+
+    public static Money getConveyance(List<Record> records) {
+        return getAmountFromField("conveyance", records);
+    }
+
+    public static int getOTHours(List<Record> records) {
+        return getIntegerValue("otHours", records);
     }
 
     public static int getTotalNumberOfDays(List<Record> records) {

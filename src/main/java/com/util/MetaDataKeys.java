@@ -20,6 +20,12 @@ public class MetaDataKeys {
 	public static final String ACTUAL_DAYS = "Actual Days";
 	public static final String PAYROLL_MONTH = "Payroll Month";
 	public static final String WAGES = "Wage";
+	public static final String HRA = "HRA";
+	public static final String CONVEYANCE = "Conveyance";
+	public static final String OT_HRS = "OT Hours";
+	public static final String AADHAR = "AADHAR";
+	public static final String JDID = "Job Description Id";
+	public static final String PMRPY = "PMRPY";
 
 
 

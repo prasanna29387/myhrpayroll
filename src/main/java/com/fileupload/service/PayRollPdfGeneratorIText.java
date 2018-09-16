@@ -64,6 +64,10 @@ public class PayRollPdfGeneratorIText {
     public static final String BASIC = "Basic";
     public static final String EARNED_BASIC = "Earned Basic";
     public static final String DEARNESS_ALLOWANCE = "Dearness Allowance";
+    public static final String HRA = "HRA";
+    public static final String CONVEYANCE = "Conveyance";
+    public static final String OT_HOURS = "OT Hours";
+    public static final String EARNED_OT = "OT Earned";
     public static final String EARNED_DEARNESS_ALLOWANCE = "Earned Dearness Allowance";
     public static final String OTHER_ALLOWANCE = "Other Allowance";
     public static final String EARNED_OTHER_ALLOWANCE = "Earned Other Allowance";
@@ -119,7 +123,8 @@ public class PayRollPdfGeneratorIText {
             getEmployeeInfoPara(payCheckDoc);
             getEmployeeInfoTable(employeePayRoll, payCheckDoc);
             getEarningsPara(payCheckDoc);
-            getEarningsTable(employeePayRoll, payCheckDoc);
+            getEarnings(employeePayRoll, payCheckDoc);
+
             getDeductionsPara(payCheckDoc);
             getDeductionsTable(employeePayRoll, payCheckDoc);
 
@@ -131,7 +136,7 @@ public class PayRollPdfGeneratorIText {
             getEmployeeInfoPara(payCheckDoc);
             getEmployeeInfoTable(employeePayRoll, payCheckDoc);
             getEarningsPara(payCheckDoc);
-            getEarningsTable(employeePayRoll, payCheckDoc);
+            getEarnings(employeePayRoll, payCheckDoc);
             getDeductionsPara(payCheckDoc);
             getDeductionsTable(employeePayRoll, payCheckDoc);
             addBlankPara(payCheckDoc);
@@ -144,6 +149,23 @@ public class PayRollPdfGeneratorIText {
             pdfDocument.close();
         }
         return pdfDocument;
+    }
+
+    private void getEarnings(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
+        if(Config.getProperty(employeePayRoll.getClientName().toLowerCase()+".earnings").equalsIgnoreCase("format1"))
+        {
+            getEarningsTableFormat1(employeePayRoll,payCheckDoc);
+        }
+        else if(Config.getProperty(employeePayRoll.getClientName().toLowerCase()+".earnings").equalsIgnoreCase("format2"))
+        {
+            getEarningsTableFormat2(employeePayRoll,payCheckDoc);
+
+        }
+        else if(Config.getProperty(employeePayRoll.getClientName().toLowerCase()+".earnings").equalsIgnoreCase("format3"))
+        {
+            getEarningsTableFormat3(employeePayRoll,payCheckDoc);
+
+        }
     }
 
     private void addSignature(Document payCheckDoc) {
@@ -287,7 +309,7 @@ public class PayRollPdfGeneratorIText {
         payCheckDoc.add(table);
     }
 
-    private void getEarningsTable(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
+    private void getEarningsTableFormat2(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
         Table table = new Table(4);
         table.setFontSize(8);
         table.addCell(TOTAL_NO_OF_WORKING_DAYS);
@@ -309,6 +331,74 @@ public class PayRollPdfGeneratorIText {
         table.addCell(employeePayRoll.getDearnessAllow().toString());
         table.addCell(EARNED_DEARNESS_ALLOWANCE);
         table.addCell(employeePayRoll.getEarnedDearnessAllowance().toString());
+        table.addCell(OTHER_ALLOWANCE);
+        table.addCell(employeePayRoll.getAllowance().toString());
+        table.addCell(EARNED_OTHER_ALLOWANCE);
+        table.addCell(employeePayRoll.getEarnedAllowance().toString());
+        payCheckDoc.add(table);
+        table = new Table(2);
+        table.setFontSize(8);
+        table.addCell(TOTAL_EARNINGS);
+        table.addCell(employeePayRoll.getEarnedGross().toString());
+        payCheckDoc.add(table);
+    }
+
+    private void getEarningsTableFormat1(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
+        Table table = new Table(4);
+        table.setFontSize(8);
+        table.addCell(TOTAL_NO_OF_WORKING_DAYS);
+        table.addCell(String.valueOf(employeePayRoll.getNumberOfWorkingDays()));
+        table.addCell(ACTUAL_WORKING_DAYS);
+        table.addCell(String.valueOf(employeePayRoll.getActualWorkingDays()));
+        payCheckDoc.add(table);
+        table = new Table(4);
+        table.setFontSize(8);
+        table.addCell(BASIC);
+        table.addCell(employeePayRoll.getBasicPay().toString());
+        table.addCell(EARNED_BASIC);
+        table.addCell(employeePayRoll.getEarnedBasic().toString());
+        table.addCell(DEARNESS_ALLOWANCE);
+        table.addCell(employeePayRoll.getDearnessAllow().toString());
+        table.addCell(EARNED_DEARNESS_ALLOWANCE);
+        table.addCell(employeePayRoll.getEarnedDearnessAllowance().toString());
+        table.addCell(OTHER_ALLOWANCE);
+        table.addCell(employeePayRoll.getAllowance().toString());
+        table.addCell(EARNED_OTHER_ALLOWANCE);
+        table.addCell(employeePayRoll.getEarnedAllowance().toString());
+        payCheckDoc.add(table);
+        table = new Table(2);
+        table.setFontSize(8);
+        table.addCell(TOTAL_EARNINGS);
+        table.addCell(employeePayRoll.getEarnedGross().toString());
+        payCheckDoc.add(table);
+    }
+
+    private void getEarningsTableFormat3(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
+        Table table = new Table(4);
+        table.setFontSize(8);
+        table.addCell(TOTAL_NO_OF_WORKING_DAYS);
+        table.addCell(String.valueOf(employeePayRoll.getNumberOfWorkingDays()));
+        table.addCell(ACTUAL_WORKING_DAYS);
+        table.addCell(String.valueOf(employeePayRoll.getActualWorkingDays()));
+        payCheckDoc.add(table);
+        table = new Table(4);
+        table.setFontSize(8);
+        table.addCell(BASIC);
+        table.addCell(employeePayRoll.getBasicPay().toString());
+        table.addCell(EARNED_BASIC);
+        table.addCell(employeePayRoll.getEarnedBasic().toString());
+        table.addCell(DEARNESS_ALLOWANCE);
+        table.addCell(employeePayRoll.getDearnessAllow().toString());
+        table.addCell(EARNED_DEARNESS_ALLOWANCE);
+        table.addCell(employeePayRoll.getEarnedDearnessAllowance().toString());
+        table.addCell(HRA);
+        table.addCell(employeePayRoll.getHra().toString());
+        table.addCell(CONVEYANCE);
+        table.addCell(employeePayRoll.getConveyance().toString());
+        table.addCell(OT_HOURS);
+        table.addCell(String.valueOf(employeePayRoll.getOtHours()));
+        table.addCell(EARNED_OT);
+        table.addCell(employeePayRoll.getOtMoney().toString());
         table.addCell(OTHER_ALLOWANCE);
         table.addCell(employeePayRoll.getAllowance().toString());
         table.addCell(EARNED_OTHER_ALLOWANCE);

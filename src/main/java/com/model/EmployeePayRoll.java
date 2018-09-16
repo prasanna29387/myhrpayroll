@@ -25,6 +25,7 @@ public class EmployeePayRoll implements Serializable {
 	private String designation;
 	private String uan;
 	private String insuranceNumber;
+	private String aadharNumber;
 	private Money basicPay;
 	private Money dearnessAllow;
 	private Money allowance;
@@ -42,6 +43,12 @@ public class EmployeePayRoll implements Serializable {
 	private Money totalDeductions;
 	private Money netPay;
 	private Money wage;
+	private Money hra;
+	private Money conveyance;
+	private int otHours;
+	private Money otMoney;
+	private String jobDescriptionId;
+	private String pmrpy;
 
 
 }

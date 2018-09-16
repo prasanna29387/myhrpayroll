@@ -37,6 +37,7 @@ public class PayRollCsvFileGenerator {
 	public static final String RESULT_FILE_NAME = "_Master";
 	public static final String ESIC_FILE_NAME = "_ESIC";
 	public static final String EPF_FILE_NAME = "_ECR";
+	public static final String PMRPY_FILE_NAME = "_PMRPY";
 	public static final String CSV = ".csv";
 	public static final String TXT = ".txt";
 	public static final String XLSX = ".xlsx";
@@ -46,6 +47,7 @@ public class PayRollCsvFileGenerator {
 		createMasterReportFile(employeePayRollList, originalFileName, finalResultForMaster);
 		createEsicFile(employeePayRollList, originalFileName);
 		createEcrFile(employeePayRollList, originalFileName);
+
 	}
 
 	private void createEcrFile(List<EmployeePayRoll> employeePayRollList, String originalFileName) {
@@ -62,6 +64,13 @@ public class PayRollCsvFileGenerator {
 		populateEmployeeDataForESIC(employeePayRollList, finalResultForMaster);
 		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ ESIC_FILE_NAME + CSV, finalResultForMaster,COMMA_DELIMITER);
 		convertCsvToXlsx(originalFileName,ESIC_FILE_NAME);
+	}
+
+	public void createPmrpyFile(List<EmployeePayRoll> employeePayRollList, String originalFileName) {
+		List<List<String>> finalResultForMaster;
+		finalResultForMaster = new ArrayList<>();
+		populateEmployeeDataForPRMPY(employeePayRollList, finalResultForMaster);
+		writeDataToFile(FileHelper.getBaseNameFromFileName(originalFileName)+ PMRPY_FILE_NAME + TXT, finalResultForMaster,EPF_DELIMITER);
 	}
 
 	private void createMasterReportFile(List<EmployeePayRoll> employeePayRollList, String originalFileName, List<List<String>> finalResultForMaster) {
@@ -176,6 +185,20 @@ public class PayRollCsvFileGenerator {
 				rowData.set(8, employeePayRoll.getEmployerEpf().truncate(0).toString());
 				rowData.set(9, "0");
 				rowData.set(10, "0");
+				finalResult.add(rowData);
+			}
+		}
+	}
+
+	private void populateEmployeeDataForPRMPY(List<EmployeePayRoll> employeePayRollList, List<List<String>> finalResult) {
+		for (EmployeePayRoll employeePayRoll : employeePayRollList) {
+			if("Y".equalsIgnoreCase(employeePayRoll.getPmrpy()))
+			{
+				List<String> rowData = new ArrayList<>(Collections.nCopies(11, EMPTY));
+				rowData.set(0, employeePayRoll.getUan());
+				rowData.set(1, employeePayRoll.getAadharNumber());
+				rowData.set(2, employeePayRoll.getEarnedGross().truncate(0).toString());
+				rowData.set(3, employeePayRoll.getJobDescriptionId());
 				finalResult.add(rowData);
 			}
 		}

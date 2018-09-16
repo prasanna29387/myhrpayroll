@@ -1,5 +1,6 @@
 package com.fileupload.service;
 
+import com.config.Config;
 import com.fileupload.model.FileParserPayLoad;
 import com.model.EmployeePayRoll;
 import com.model.Record;
@@ -43,6 +44,10 @@ public class FileProcessorService {
 
 			payRollCsvFileGenerator.createCsvFile(employeePayRolls,originalFileName);
 			payRollPdfGeneratorIText.createPayRollPDf(employeePayRolls,originalFileName);
+			if(Config.getProperty(employeePayRolls.get(0).getClientName().toLowerCase()+".pmrpy").equalsIgnoreCase("Y"))
+			{
+				payRollCsvFileGenerator.createPmrpyFile(employeePayRolls,originalFileName);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -108,6 +113,40 @@ public class FileProcessorService {
 
 			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
 		}
+
+		else if(employeePayRoll.getClientName().equalsIgnoreCase("saisri_lables")) {
+
+			employeePayRoll.setEarnedBasic(((employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(), 2))
+					.multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
+
+			employeePayRoll.setEarnedDearnessAllowance(((employeePayRoll.getDearnessAllow().divide(employeePayRoll.getNumberOfWorkingDays(), 2)).
+					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
+
+			Money earnedBasicPlusDa = employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedDearnessAllowance()).truncate(0);
+
+			Money otMoney = employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(),2).divide(8,2).multiply(2).multiply(employeePayRoll.getOtHours()).truncate(0);
+
+			employeePayRoll.setOtMoney(otMoney);
+			employeePayRoll.setEarnedAllowance(((employeePayRoll.getAllowance().add(employeePayRoll.getHra()).add(employeePayRoll.getConveyance()).add(employeePayRoll.getOtMoney()))).truncate(0));
+
+			employeePayRoll.setEarnedBasicPlusDa(earnedBasicPlusDa);
+
+			employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).truncate(0));
+
+			employeePayRoll.setEmployeePf(earnedBasicPlusDa.multiply(0.12).truncate(0));
+			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
+
+
+			employeePayRoll.setEmployerEps(earnedBasicPlusDa.multiply(0.0833).truncate(0));
+			employeePayRoll.setEmployerEpf(earnedBasicPlusDa.multiply(0.0367).truncate(0));
+
+
+			employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
+
+
+			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
+		}
+
 		return employeePayRoll;
 	}
 
@@ -196,8 +235,14 @@ public class FileProcessorService {
 				.numberOfWorkingDays(EmployeePayRollMapper.getTotalNumberOfDays(records))
 				.actualWorkingDays(EmployeePayRollMapper.getActualNumberOfDays(records))
 				.wage(EmployeePayRollMapper.getWages(records))
+				.hra(EmployeePayRollMapper.getHra(records))
+				.conveyance(EmployeePayRollMapper.getConveyance(records))
+				.otHours(EmployeePayRollMapper.getOTHours(records))
 				.transactionId(uniqueUploadId)
 				.payRollMonth(EmployeePayRollMapper.getPayrollMonth(records))
+				.aadharNumber(EmployeePayRollMapper.getAadhar(records))
+				.jobDescriptionId(EmployeePayRollMapper.getJobId(records))
+				.pmrpy(EmployeePayRollMapper.getPMRPY(records))
 				.uploadedFileName(EmployeePayRollMapper.getUploadedFile(records)).build();
 		return employeePayRoll;
 	}
