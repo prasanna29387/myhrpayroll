@@ -56,31 +56,36 @@ public class FileProcessorService {
 	}
 
 
+	private EmployeePayRoll calculateDeductionsAnFinalMoney(EmployeePayRoll employeePayRoll)
+	{
+
+		employeePayRoll.setEmployeePf(employeePayRoll.getEarnedBasic().multiply(0.12).truncate(0));
+		employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
+
+		employeePayRoll.setEmployerEps(employeePayRoll.getEarnedBasic().multiply(0.0833).truncate(0));
+		employeePayRoll.setEmployerEpf(employeePayRoll.getEarnedBasic().multiply(0.0367).truncate(0));
+
+		employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
+		employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
+
+		return employeePayRoll;
+	}
+
 
 	private EmployeePayRoll computeMonthlyPayCheck(EmployeePayRoll employeePayRoll) {
 
-
 		if(employeePayRoll.getClientName().equalsIgnoreCase("immanuel_agencies"))
 		{
-
 			employeePayRoll.setDearnessAllow(MoneyFactory.fromString("0"));
 			employeePayRoll.setEarnedDearnessAllowance(MoneyFactory.fromString("0"));
+
 			employeePayRoll.setBasicPay(employeePayRoll.getWage().multiply(employeePayRoll.getNumberOfWorkingDays()).truncate(0));
 			employeePayRoll.setEarnedBasic(employeePayRoll.getWage().multiply(employeePayRoll.getActualWorkingDays()).truncate(0));
 			employeePayRoll.setEarnedAllowance(employeePayRoll.getAllowance().multiply(employeePayRoll.getActualWorkingDays()).truncate(0));
 			employeePayRoll.setEarnedBasicPlusDa(employeePayRoll.getEarnedBasic());
 			employeePayRoll.setEarnedGross(employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedAllowance()));
-			employeePayRoll.setEmployeePf(employeePayRoll.getEarnedBasic().multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
 
-			employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
-			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
-
-			employeePayRoll.setEmployerEps(employeePayRoll.getEarnedBasic().multiply(0.0833).truncate(0));
-			employeePayRoll.setEmployerEpf(employeePayRoll.getEarnedBasic().multiply(0.0367).truncate(0));
-
-
-
+			calculateDeductionsAnFinalMoney(employeePayRoll);
 
 		}
 		else if(employeePayRoll.getClientName().equalsIgnoreCase("ufs_kone")) {
@@ -92,27 +97,14 @@ public class FileProcessorService {
 					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
 
 			Money earnedBasicPlusDa = employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedDearnessAllowance()).truncate(0);
-
 			employeePayRoll.setEarnedAllowance(((employeePayRoll.getAllowance().divide(employeePayRoll.getNumberOfWorkingDays(), 2)).
 					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
 
 			employeePayRoll.setEarnedBasicPlusDa(earnedBasicPlusDa);
-
 			employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).truncate(0));
+			calculateDeductionsAnFinalMoney(employeePayRoll);
 
-			employeePayRoll.setEmployeePf(earnedBasicPlusDa.multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
-
-
-			employeePayRoll.setEmployerEps(earnedBasicPlusDa.multiply(0.0833).truncate(0));
-			employeePayRoll.setEmployerEpf(earnedBasicPlusDa.multiply(0.0367).truncate(0));
-
-
-			employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
-
-
-			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
-		}
+	}
 
 		else if(employeePayRoll.getClientName().equalsIgnoreCase("saisri_lables")) {
 
@@ -123,28 +115,14 @@ public class FileProcessorService {
 					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
 
 			Money earnedBasicPlusDa = employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedDearnessAllowance()).truncate(0);
-
 			Money otMoney = employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(),2).divide(8,2).multiply(2).multiply(employeePayRoll.getOtHours()).truncate(0);
 
 			employeePayRoll.setOtMoney(otMoney);
 			employeePayRoll.setEarnedAllowance(((employeePayRoll.getAllowance().add(employeePayRoll.getHra()).add(employeePayRoll.getConveyance()).add(employeePayRoll.getOtMoney()))).truncate(0));
-
 			employeePayRoll.setEarnedBasicPlusDa(earnedBasicPlusDa);
-
 			employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).truncate(0));
 
-			employeePayRoll.setEmployeePf(earnedBasicPlusDa.multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
-
-
-			employeePayRoll.setEmployerEps(earnedBasicPlusDa.multiply(0.0833).truncate(0));
-			employeePayRoll.setEmployerEpf(earnedBasicPlusDa.multiply(0.0367).truncate(0));
-
-
-			employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
-
-
-			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
+			calculateDeductionsAnFinalMoney(employeePayRoll);
 		}
 
 		return employeePayRoll;
