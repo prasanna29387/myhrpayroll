@@ -44,6 +44,8 @@ public class EmployeePayRoll implements Serializable {
 	private Money netPay;
 	private Money wage;
 	private Money hra;
+	private Money earnedHRA;
+	private Money earnedConveyance;
 	private Money conveyance;
 	private int otHours;
 	private Money otMoney;

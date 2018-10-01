@@ -65,7 +65,9 @@ public class PayRollPdfGeneratorIText {
     public static final String EARNED_BASIC = "Earned Basic";
     public static final String DEARNESS_ALLOWANCE = "Dearness Allowance";
     public static final String HRA = "HRA";
+    public static final String EARNED_HRA = "Earned HRA";
     public static final String CONVEYANCE = "Conveyance";
+    public static final String EARNED_CONVEYANCE = "Earned Conveyance";
     public static final String OT_HOURS = "OT Hours";
     public static final String EARNED_OT = "OT Earned";
     public static final String EARNED_DEARNESS_ALLOWANCE = "Earned Dearness Allowance";
@@ -291,7 +293,7 @@ public class PayRollPdfGeneratorIText {
     }
 
     private void getDeductionsTable(EmployeePayRoll employeePayRoll, Document payCheckDoc) {
-        Table table = new Table(2);
+        Table table = new Table(4);
         table.setFontSize(8);
         table.addCell(EPF);
         table.addCell(employeePayRoll.getEmployeePf().toString());
@@ -393,8 +395,12 @@ public class PayRollPdfGeneratorIText {
         table.addCell(employeePayRoll.getEarnedDearnessAllowance().toString());
         table.addCell(HRA);
         table.addCell(employeePayRoll.getHra().toString());
+        table.addCell(EARNED_HRA);
+        table.addCell(employeePayRoll.getEarnedHRA().toString());
         table.addCell(CONVEYANCE);
         table.addCell(employeePayRoll.getConveyance().toString());
+        table.addCell(EARNED_CONVEYANCE);
+        table.addCell(employeePayRoll.getEarnedConveyance().toString());
         table.addCell(OT_HOURS);
         table.addCell(String.valueOf(employeePayRoll.getOtHours()));
         table.addCell(EARNED_OT);

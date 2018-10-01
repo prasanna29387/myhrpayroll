@@ -115,12 +115,25 @@ public class FileProcessorService {
 					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
 
 			Money earnedBasicPlusDa = employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedDearnessAllowance()).truncate(0);
-			Money otMoney = employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(),2).divide(8,2).multiply(2).multiply(employeePayRoll.getOtHours()).truncate(0);
+
+			Money otMoney = employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(),2).
+					divide(8,2).multiply(2).multiply(employeePayRoll.getOtHours()).truncate(0);
 
 			employeePayRoll.setOtMoney(otMoney);
-			employeePayRoll.setEarnedAllowance(((employeePayRoll.getAllowance().add(employeePayRoll.getHra()).add(employeePayRoll.getConveyance()).add(employeePayRoll.getOtMoney()))).truncate(0));
+
+			employeePayRoll.setEarnedAllowance(((employeePayRoll.getAllowance().divide(employeePayRoll.getNumberOfWorkingDays(), 2)).
+					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
+
+			employeePayRoll.setEarnedHRA(((employeePayRoll.getHra().divide(employeePayRoll.getNumberOfWorkingDays(), 2)).
+					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
+
+			employeePayRoll.setEarnedConveyance(((employeePayRoll.getConveyance().divide(employeePayRoll.getNumberOfWorkingDays(), 2)).
+					multiply(employeePayRoll.getActualWorkingDays())).truncate(0));
+
 			employeePayRoll.setEarnedBasicPlusDa(earnedBasicPlusDa);
-			employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).truncate(0));
+
+			employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).add(employeePayRoll.getEarnedHRA())
+					.add(employeePayRoll.getEarnedConveyance()).add(employeePayRoll.getOtMoney()).truncate(0));
 
 			calculateDeductionsAnFinalMoney(employeePayRoll);
 		}
