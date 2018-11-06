@@ -4,6 +4,8 @@ import com.config.Config;
 import com.config.ContextConfig;
 import com.fileupload.controller.FileParserController;
 import com.fileupload.model.FileParserPayLoad;
+import com.fileupload.service.FileParserService;
+import com.fileupload.service.FileProcessorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,7 +29,7 @@ public class FileParserControllerUtil {
 	private static final int BUFFER_SIZE = 65535;
 	private static final String TEST_FILE_FOLDER= "upload.config.test.folder";
 	private AbstractApplicationContext ctx;
-	private FileParserController fileParserController;
+	private FileProcessorService fileProcessorService;
 
 	public static void main(String[] args) {
 		Config.kickOffConfig();
@@ -64,7 +66,7 @@ public class FileParserControllerUtil {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			if (fileInputStream.read(buffer, 0, buffer.length) > 0) {
 				//fileParserController.processUploadedFile("BulkUpload", "Test1.xls", buffer);
-				String responseEntity =   fileParserController.processUploadedFile("BulkUpload", testFileName, buffer).toString();
+				String responseEntity =   fileProcessorService.processUploadedFile("BulkUpload", testFileName, buffer).toString();
 				log.info("response "+responseEntity);
 				responseEntity = responseEntity.substring(responseEntity.indexOf(",")+1);
 				responseEntity = responseEntity.substring(0,responseEntity.lastIndexOf(","));
@@ -83,7 +85,7 @@ public class FileParserControllerUtil {
 
 	public void runSubmitTest(String fileName) {
 		try {
-			fileParserController.bulkUploadSubmit(fileName, "INFY");
+			fileProcessorService.bulkUploadSubmit(fileName, "INFY");
 		} catch (IOException e) {
 			log.error("Exception while submitting uploadTest {}",e);
 		}
@@ -93,7 +95,7 @@ public class FileParserControllerUtil {
 	private void initSetUp() {
 
 		ctx = new AnnotationConfigApplicationContext(ContextConfig.class);
-		fileParserController = ctx.getBean(FileParserController.class);
+		fileProcessorService = ctx.getBean(FileProcessorService.class);
 	}
 
 

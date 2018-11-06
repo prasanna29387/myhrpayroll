@@ -2,6 +2,7 @@ package com.fileupload.service;
 
 import com.config.Config;
 import com.fileupload.model.FileParserPayLoad;
+import com.fileupload.util.FileUploadUtil;
 import com.model.EmployeePayRoll;
 import com.model.Record;
 import com.money.Money;
@@ -12,9 +13,15 @@ import com.util.UniqueIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,13 +31,69 @@ import java.util.stream.IntStream;
 @Service
 public class FileProcessorService {
 
+	protected static final String YYYY_MM_DD_HHMMSS = "yyyy-MM-dd_HHmmss";
+	public static final String DELIMITER = ".";
+	public static final String UNDERSCORE = "_";
+	protected static String backupFolder = Config.getProperty("fax.nas.backup.folder");
+
+
 	@Autowired
 	PayRollCsvFileGenerator payRollCsvFileGenerator;
 
 	@Autowired
 	PayRollPdfGeneratorIText payRollPdfGeneratorIText;
 
-	public void processFile(ResponseEntity<String> response, String clientName,String originalFileName) {
+	@Autowired
+	FileParserService fileParserService;
+
+
+	public ResponseEntity<String> processUploadedFile(String source, String fileName, byte[] bulkUploadFile)
+			throws IOException {
+		String fileNameModified = create(bulkUploadFile, fileName, backupFolder,source);
+		return findMatchingTemplate(fileNameModified,true);
+	}
+
+	private ResponseEntity<String> findMatchingTemplate(@RequestParam("uploadFileName") final String uploadFileName,
+													   @RequestParam("withData") final boolean withData) {
+		try {
+			return new ResponseEntity<>(fileParserService.getPayload(uploadFileName, withData).toJson(), HttpStatus.OK);
+		} catch (IOException e) {
+			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
+			return new ResponseEntity<>("ERROR:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	private String create(byte[] bytes, String fileName, String fileLocation, String source) throws IOException {
+		String fileNameModified = fileName;
+		if ("BulkUpload".equalsIgnoreCase(source)) {
+			fileNameModified = getModifiedBulkUploadFileName(fileName,
+					FileUploadUtil.getCurrentDateTimeAsString(YYYY_MM_DD_HHMMSS));
+		}
+		File serverFile = new File(fileLocation + File.separator + fileNameModified);
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
+		stream.write(bytes);
+		stream.close();
+		log.info("Server File Location=" + serverFile.getAbsolutePath());
+		return fileNameModified;
+	}
+
+	private String getModifiedBulkUploadFileName(String fileName, String currentDateTimeStamp) {
+		int lastIndex = fileName.lastIndexOf(DELIMITER);
+		String fileNamePart = fileName.substring(0, lastIndex);
+		String extension = fileName.substring(lastIndex);
+		return fileNamePart + UNDERSCORE + currentDateTimeStamp + extension;
+	}
+
+
+
+	public void bulkUploadSubmit(String uploadFileName,String clientName) throws IOException {
+		ResponseEntity<String> response = new ResponseEntity<>(fileParserService.getPayload(uploadFileName, true).toJson(), HttpStatus.OK);
+		processFile(response,clientName,uploadFileName);
+	}
+
+
+	private void processFile(ResponseEntity<String> response, String clientName,String originalFileName) {
 		List<List<Record>> listOfRecords;
 		List<EmployeePayRoll> employeePayRolls = null;
 		try {
