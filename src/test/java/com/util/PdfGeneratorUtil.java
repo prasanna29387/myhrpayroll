@@ -25,7 +25,7 @@ public class PdfGeneratorUtil {
                 .dearnessAllow(MoneyFactory.fromString("2000.0"))
                 .allowance(MoneyFactory.fromString("100"))
                 .numberOfWorkingDays(20)
-                .actualWorkingDays(10)
+                .actualWorkingDays(10.0)
                 .earnedBasic(MoneyFactory.fromString("1231"))
                 .earnedDearnessAllowance(MoneyFactory.fromString("12312"))
                 .earnedAllowance(MoneyFactory.fromString("12312"))

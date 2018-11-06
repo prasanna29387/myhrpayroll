@@ -5,6 +5,7 @@ import com.money.Money;
 import com.money.MoneyFactory;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,16 +121,16 @@ public class EmployeePayRollMapper {
         return getAmountFromField("conveyance", records);
     }
 
-    public static int getOTHours(List<Record> records) {
-        return getIntegerValue("otHours", records);
+    public static Double getOTHours(List<Record> records) {
+        return getDouble("otHours", records);
     }
 
     public static int getTotalNumberOfDays(List<Record> records) {
         return getIntegerValue("totalDays", records);
     }
 
-    public static int getActualNumberOfDays(List<Record> records) {
-        return getIntegerValue("actualDays", records);
+    public static Double getActualNumberOfDays(List<Record> records) {
+        return getDouble("actualDays", records);
     }
 
     private static Money getAmountFromField(String name, List<Record> records) {
@@ -143,6 +144,28 @@ public class EmployeePayRollMapper {
 
     public static int getIntegerValue(String value) {
         return isEmpty(value) ? new Integer(0) : Integer.valueOf(value);
+
+    }
+
+/*
+    public static BigDecimal getBigValue(String name, List<Record> records) {
+        return getBigDecimalValue(getValue(name, records));
+
+    }
+
+    public static BigDecimal getBigDecimalValue(String value) {
+        return isEmpty(value) ? new BigDecimal(0.0) : new BigDecimal(value);
+
+    }
+*/
+
+    public static Double getDouble(String name, List<Record> records) {
+        return getDoubleValue(getValue(name, records));
+
+    }
+
+    public static Double getDoubleValue(String value) {
+        return isEmpty(value) ? 0.0 : Double.parseDouble(value);
 
     }
 

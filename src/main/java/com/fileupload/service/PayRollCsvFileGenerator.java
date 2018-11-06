@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +26,8 @@ public class PayRollCsvFileGenerator {
 
 	public static final String UPLOAD_FILE_LOCATION = "fax.nas.backup.folder";
 	private static final String[] masterFileHeaderColumns = { "Employer Name", "Employee Name", "Pay Roll Month","UAN", "Insurance Number", "Basic", "DA",
-			"Allowance", "Total No Of Working Days","Actual Working Days","Earned Basic","Earned DA","Earned Basic Plus DA","Earned Allowance","Gross Pay","EPF Employee Contribution","ESI",
+			"Allowance", "Total No Of Working Days","Actual Working Days","Earned Basic","Earned DA","Earned Basic Plus DA","Earned Allowance","HRA","Earned HRA","Conveyance",
+			"Earned Conveyance","OT Hours","OT Earned","Gross Pay","EPF Employee Contribution","ESI",
 			"Total Deductions", "Net Salary","EPS Employer Contribution","EPF Employer Contribution" };
 
 	private static final String[] esicFileHeaderColumns = { "IP Number (10 Digits)", "IP Name ( Only alphabets and space )", "No of Days for which wages paid/payable during the month",
@@ -129,13 +131,14 @@ public class PayRollCsvFileGenerator {
 
 	private void populateEmployeeDataForMaster(List<EmployeePayRoll> employeePayRollList, List<List<String>> finalResult) {
 		for (EmployeePayRoll employeePayRoll : employeePayRollList) {
-				List<String> rowData = new ArrayList<>(Collections.nCopies(21, EMPTY));
+				List<String> rowData = new ArrayList<>(Collections.nCopies(27, EMPTY));
 				rowData.set(0, employeePayRoll.getClientName());
 				rowData.set(1, employeePayRoll.getEmployeeName());
 				rowData.set(2, employeePayRoll.getPayRollMonth());
 				rowData.set(3, employeePayRoll.getUan());
 				rowData.set(4, employeePayRoll.getInsuranceNumber());
 				rowData.set(5, employeePayRoll.getBasicPay().toString());
+
 				rowData.set(6, employeePayRoll.getDearnessAllow().toString());
 				rowData.set(7, employeePayRoll.getAllowance().toString());
 				rowData.set(8, String.valueOf(employeePayRoll.getNumberOfWorkingDays()));
@@ -144,13 +147,21 @@ public class PayRollCsvFileGenerator {
 				rowData.set(11, employeePayRoll.getEarnedDearnessAllowance().toString());
 				rowData.set(12, employeePayRoll.getEarnedBasicPlusDa().toString());
 				rowData.set(13, employeePayRoll.getEarnedAllowance().toString());
-				rowData.set(14, employeePayRoll.getEarnedGross().toString());
-				rowData.set(15, employeePayRoll.getEmployeePf().toString());
-				rowData.set(16, employeePayRoll.getEmployeeEsi().toString());
-				rowData.set(17, employeePayRoll.getTotalDeductions().toString());
-				rowData.set(18, employeePayRoll.getNetPay().toString());
-				rowData.set(19, employeePayRoll.getEmployerEps().toString());
-				rowData.set(20, employeePayRoll.getEmployerEpf().toString());
+				rowData.set(14, employeePayRoll.getHra().toString());
+				rowData.set(15, employeePayRoll.getEarnedHRA().toString());
+			    rowData.set(16, employeePayRoll.getConveyance().toString());
+				rowData.set(17, employeePayRoll.getEarnedConveyance().toString());
+				rowData.set(18, String.valueOf(employeePayRoll.getOtHours()));
+				rowData.set(19, employeePayRoll.getOtMoney().toString());
+
+
+			    rowData.set(20, employeePayRoll.getEarnedGross().toString());
+				rowData.set(21, employeePayRoll.getEmployeePf().toString());
+				rowData.set(22, employeePayRoll.getEmployeeEsi().toString());
+				rowData.set(23, employeePayRoll.getTotalDeductions().toString());
+				rowData.set(24, employeePayRoll.getNetPay().toString());
+				rowData.set(25, employeePayRoll.getEmployerEps().toString());
+				rowData.set(26, employeePayRoll.getEmployerEpf().toString());
 				finalResult.add(rowData);
 		}
 	}

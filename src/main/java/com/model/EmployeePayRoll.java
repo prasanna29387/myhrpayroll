@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Created by Athul Ravindran  on 9/15/2017.
@@ -30,7 +31,7 @@ public class EmployeePayRoll implements Serializable {
 	private Money dearnessAllow;
 	private Money allowance;
 	private int numberOfWorkingDays;
-	private int actualWorkingDays;
+	private double actualWorkingDays;
 	private Money earnedBasic;
 	private Money earnedDearnessAllowance;
 	private Money earnedAllowance;
@@ -47,7 +48,7 @@ public class EmployeePayRoll implements Serializable {
 	private Money earnedHRA;
 	private Money earnedConveyance;
 	private Money conveyance;
-	private int otHours;
+	private double otHours;
 	private Money otMoney;
 	private String jobDescriptionId;
 	private String pmrpy;
