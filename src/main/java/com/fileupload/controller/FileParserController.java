@@ -28,10 +28,17 @@ public class FileParserController {
 
 	public static final String UPLOAD_FILE = "/upload/data";
 	public static final String SUBMIT_UPLOAD = "/upload/submit";
+	public static final String UPLOAD_FILE_LOCATION = "fax.nas.backup.folder";
+	protected static final String YYYY_MM_DD_HHMMSS = "yyyy-MM-dd_HHmmss";
+	public static final String DELIMITER = ".";
+	public static final String UNDERSCORE = "_";
+	protected static String backupFolder = Config.getProperty(UPLOAD_FILE_LOCATION);
 
 
 	@Autowired
 	private FileProcessorService fileProcessorService;
+	@Autowired
+	private FileParserService fileParserService;
 
 
 	@RequestMapping(value = UPLOAD_FILE, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -44,7 +51,7 @@ public class FileParserController {
 				MultipartFile bulkUploadFile = request.getFile(itr.next());
 				fileName = bulkUploadFile.getOriginalFilename();
 				byte[] filedata = bulkUploadFile.getBytes();
-				return fileProcessorService.processUploadedFile(source, fileName, filedata);
+				return processUploadedFile(source, fileName, filedata);
 			}
 
 		} catch (Exception e) {
@@ -58,7 +65,7 @@ public class FileParserController {
 	@RequestMapping(value = SUBMIT_UPLOAD, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> submitBulkUpload(@RequestParam("uploadFileName") final String uploadFileName, @RequestParam("clientName") final String clientName) {
 		try {
-			fileProcessorService.bulkUploadSubmit(uploadFileName, clientName);
+			bulkUploadSubmit(uploadFileName, clientName);
 			return new ResponseEntity<>("Success:" , HttpStatus.OK);
 		} catch (IOException e) {
 			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
@@ -66,6 +73,48 @@ public class FileParserController {
 		}
 	}
 
+	public void bulkUploadSubmit(String uploadFileName,String clientName) throws IOException {
+		ResponseEntity<String> response = new ResponseEntity<>(fileParserService.getPayload(uploadFileName, true).toJson(), HttpStatus.OK);
+		fileProcessorService.processFile(response,clientName,uploadFileName);
+	}
+
+	public ResponseEntity<String> findMatchingTemplate(@RequestParam("uploadFileName") final String uploadFileName,
+			@RequestParam("withData") final boolean withData) {
+		try {
+			return new ResponseEntity<>(fileParserService.getPayload(uploadFileName, withData).toJson(), HttpStatus.OK);
+		} catch (IOException e) {
+			log.error("Received exception during reading xls file data {}.", uploadFileName, e);
+			return new ResponseEntity<>("ERROR:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	public ResponseEntity<String> processUploadedFile(String source, String fileName, byte[] bulkUploadFile)
+			throws IOException {
+		String fileNameModified = create(bulkUploadFile, fileName, backupFolder,source);
+		return findMatchingTemplate(fileNameModified,true);
+	}
+
+	private String create(byte[] bytes, String fileName, String fileLocation, String source) throws IOException {
+		String fileNameModified = fileName;
+		if ("BulkUpload".equalsIgnoreCase(source)) {
+			fileNameModified = getModifiedBulkUploadFileName(fileName,
+					FileUploadUtil.getCurrentDateTimeAsString(YYYY_MM_DD_HHMMSS));
+		}
+		File serverFile = new File(fileLocation + File.separator + fileNameModified);
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
+		stream.write(bytes);
+		stream.close();
+		log.info("Server File Location=" + serverFile.getAbsolutePath());
+		return fileNameModified;
+	}
+
+	protected String getModifiedBulkUploadFileName(String fileName, String currentDateTimeStamp) {
+		int lastIndex = fileName.lastIndexOf(DELIMITER);
+		String fileNamePart = fileName.substring(0, lastIndex);
+		String extension = fileName.substring(lastIndex);
+		return fileNamePart + UNDERSCORE + currentDateTimeStamp + extension;
+	}
 
 
 }

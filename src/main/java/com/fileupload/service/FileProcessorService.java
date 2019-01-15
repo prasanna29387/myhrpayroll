@@ -93,7 +93,7 @@ public class FileProcessorService {
 	}
 
 
-	private void processFile(ResponseEntity<String> response, String clientName,String originalFileName) {
+	public void processFile(ResponseEntity<String> response, String clientName,String originalFileName) {
 		List<List<Record>> listOfRecords;
 		List<EmployeePayRoll> employeePayRolls = null;
 		try {
@@ -121,13 +121,11 @@ public class FileProcessorService {
 
 
 	private EmployeePayRoll computeMonthlyPayCheck(EmployeePayRoll employeePayRoll) {
-		
+
 		Double actualWorkingDays = employeePayRoll.getActualWorkingDays();
 
 		if(employeePayRoll.getClientName().equalsIgnoreCase("immanuel_agencies"))
 		{
-			employeePayRoll.setDearnessAllow(MoneyFactory.fromString("0"));
-			employeePayRoll.setEarnedDearnessAllowance(MoneyFactory.fromString("0"));
 			employeePayRoll.setBasicPay(employeePayRoll.getWage().multiply(employeePayRoll.getNumberOfWorkingDays()).truncate(0));
 			employeePayRoll.setEarnedBasic(employeePayRoll.getWage().multiply(actualWorkingDays).truncate(0));
 			employeePayRoll.setEarnedAllowance(employeePayRoll.getAllowance().multiply(actualWorkingDays).truncate(0));
@@ -141,6 +139,13 @@ public class FileProcessorService {
 
 			employeePayRoll.setEmployerEps(employeePayRoll.getEarnedBasic().multiply(0.0833).truncate(0));
 			employeePayRoll.setEmployerEpf(employeePayRoll.getEarnedBasic().multiply(0.0367).truncate(0));
+
+			employeePayRoll.setDearnessAllow(MoneyFactory.fromString("0"));
+			employeePayRoll.setEarnedDearnessAllowance(MoneyFactory.fromString("0"));
+			employeePayRoll.setEarnedHRA(MoneyFactory.fromString("0"));
+			employeePayRoll.setEarnedConveyance(MoneyFactory.fromString("0"));
+			employeePayRoll.setOtMoney(MoneyFactory.fromString("0"));
+
 
 
 
