@@ -132,7 +132,7 @@ public class FileProcessorService {
 			employeePayRoll.setEarnedBasicPlusDa(employeePayRoll.getEarnedBasic());
 			employeePayRoll.setEarnedGross(employeePayRoll.getEarnedBasic().add(employeePayRoll.getEarnedAllowance()));
 			employeePayRoll.setEmployeePf(employeePayRoll.getEarnedBasic().multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
+			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0075).truncate(0));
 
 			employeePayRoll.setTotalDeductions(employeePayRoll.getEmployeePf().add(employeePayRoll.getEmployeeEsi()).truncate(0));
 			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
@@ -169,7 +169,7 @@ public class FileProcessorService {
 			employeePayRoll.setEarnedGross(earnedBasicPlusDa.add(employeePayRoll.getEarnedAllowance()).truncate(0));
 
 			employeePayRoll.setEmployeePf(earnedBasicPlusDa.multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
+			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0075).truncate(0));
 
 
 			employeePayRoll.setEmployerEps(earnedBasicPlusDa.multiply(0.0833).truncate(0));
@@ -182,7 +182,8 @@ public class FileProcessorService {
 			employeePayRoll.setNetPay(employeePayRoll.getEarnedGross().subtract(employeePayRoll.getTotalDeductions()).truncate(0));
 		}
 
-		else if(employeePayRoll.getClientName().equalsIgnoreCase("saisri_lables")) {
+		else if(employeePayRoll.getClientName().equalsIgnoreCase("saisri_lables") ||
+				employeePayRoll.getClientName().equalsIgnoreCase("saisri_automation")) {
 
 
 			employeePayRoll.setEarnedBasic(((employeePayRoll.getBasicPay().divide(employeePayRoll.getNumberOfWorkingDays(), 2))
@@ -213,7 +214,7 @@ public class FileProcessorService {
 					.add(employeePayRoll.getEarnedConveyance()).add(employeePayRoll.getOtMoney()).truncate(0));
 
 			employeePayRoll.setEmployeePf(earnedBasicPlusDa.multiply(0.12).truncate(0));
-			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0175).truncate(0));
+			employeePayRoll.setEmployeeEsi(employeePayRoll.getEarnedGross().multiply(0.0075).truncate(0));
 
 
 			employeePayRoll.setEmployerEps(earnedBasicPlusDa.multiply(0.0833).truncate(0));

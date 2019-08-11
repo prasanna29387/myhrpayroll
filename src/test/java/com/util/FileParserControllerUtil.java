@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Athul Ravindran  on 9/15/2017.
@@ -33,7 +31,7 @@ public class FileParserControllerUtil {
         Config.kickOffConfig();
         long s1 = System.currentTimeMillis();
         log.info("Start TimeStamp "+s1);
-        String testFileName = "SAI SRI LABLES_FEB_ATTENDANCE - 2018.xlsx";
+        String testFileName = "IMM_JULY_ATTENDANCE_2019.xlsx";
         FileParserControllerUtil fileParserControllerUtil = new FileParserControllerUtil();
         fileParserControllerUtil.initSetUp();
         fileParserControllerUtil.copyFileToTestDirectory(testFileName);
@@ -41,7 +39,6 @@ public class FileParserControllerUtil {
         long s2 = System.currentTimeMillis();
         long s3 = s2-s1;
         log.info("Total Time Taken in Seconds"+(int) ((s3 / 1000) % 60));
-
 
     }
 
