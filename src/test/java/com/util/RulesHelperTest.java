@@ -24,7 +24,7 @@ public class RulesHelperTest {
     }
 
     @Test
-    public void testIsValidEmail() throws Exception {
+    public void testIsValidEmail1() throws Exception {
 
         assertTrue(RulesHelper.isValidEmail("yaamini6@gmail.com"));
         assertTrue(RulesHelper.isValidEmail("yaamini@gmail.com"));

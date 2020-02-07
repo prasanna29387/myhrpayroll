@@ -31,7 +31,7 @@ public class FileParserControllerUtil {
         Config.kickOffConfig();
         long s1 = System.currentTimeMillis();
         log.info("Start TimeStamp "+s1);
-        String testFileName = "IMM_OCT_ATTENDANCE_2019.xlsx";
+        String testFileName = "IMM_JAN_ATTENDANCE2020.xlsx";
         FileParserControllerUtil fileParserControllerUtil = new FileParserControllerUtil();
         fileParserControllerUtil.initSetUp();
         fileParserControllerUtil.copyFileToTestDirectory(testFileName);
