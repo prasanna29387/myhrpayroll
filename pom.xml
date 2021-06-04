@@ -20,7 +20,7 @@
 
         <slf4j.version>1.7.12</slf4j.version>
         <log4j.version>2.4.1</log4j.version>
-        <httpclient.version>4.5.2</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
         <togglz.version>2.3.0.Final</togglz.version>
 
         <java.version>1.8</java.version>
